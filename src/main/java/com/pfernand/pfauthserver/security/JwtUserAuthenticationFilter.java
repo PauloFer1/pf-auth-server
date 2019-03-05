@@ -39,14 +39,10 @@ public class JwtUserAuthenticationFilter extends UsernamePasswordAuthenticationF
 
         try {
 
-            // 1. Get credentials from request
             UserCredentials creds = objectMapper.readValue(request.getInputStream(), UserCredentials.class);
-
-            // 2. Create auth object (contains credentials) which will be used by auth manager
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     creds.getUsername(), creds.getPassword(), Collections.emptyList());
 
-            // 3. Authentication manager authenticate the user, and use UserDetialsServiceImpl::loadUserByUsername() method to load the user.
             return authManager.authenticate(authToken);
 
         } catch (IOException e) {

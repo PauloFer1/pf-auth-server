@@ -24,7 +24,7 @@ public class JwtConfig {
     public JwtConfig(@Value("${security.jwt.uri:/auth/**}") final String uri,
                      @Value("${security.jwt.header:Authorization}") final String header,
                      @Value("${security.jwt.prefix:Bearer }") final String prefix,
-                     @Value("${security.jwt.expiration:#{24*60*60}}") final int expiration,
+                     @Value("${security.jwt.expiration:#{60*60}}") final int expiration,
                      @Value("${security.jwt.secret:JwtSecretKey}") final String secret) {
         this.uri = uri;
         this.header = header;
