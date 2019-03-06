@@ -17,14 +17,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationQueryMongo implements AuthenticationQuery {
 
-    private static final String USER_EMAIL = "email";
+    private static final String EMAIL_CRITERIA = "email";
 
     private final MongoTemplate mongoTemplate;
 
     @Override
     public Optional<UserAuthDetails> getUserFromEmail(String email) {
         final Query query = new Query();
-        query.addCriteria(Criteria.where(USER_EMAIL).is(email));
-        return Optional.ofNullable(mongoTemplate.findOne(query, UserAuthDetails.class, DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection()));
+        query.addCriteria(Criteria.where(EMAIL_CRITERIA).is(email));
+        return Optional.ofNullable(mongoTemplate.findOne(
+                query,
+                UserAuthDetails.class,
+                DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection())
+        );
     }
 }
