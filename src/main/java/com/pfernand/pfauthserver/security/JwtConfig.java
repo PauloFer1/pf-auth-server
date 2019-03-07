@@ -18,6 +18,8 @@ public class JwtConfig {
 
     private final int expiration;
 
+    private final int refreshExpiration;
+
     private final String secret;
 
     @Inject
@@ -25,11 +27,13 @@ public class JwtConfig {
                      @Value("${security.jwt.header:Authorization}") final String header,
                      @Value("${security.jwt.prefix:Bearer }") final String prefix,
                      @Value("${security.jwt.expiration:#{60*60}}") final int expiration,
+                     @Value("${security.jwt.refresh.expiration:#{60*600}}") final int refreshExpiration,
                      @Value("${security.jwt.secret:JwtSecretKey}") final String secret) {
         this.uri = uri;
         this.header = header;
         this.prefix = prefix;
         this.expiration = expiration;
+        this.refreshExpiration = refreshExpiration;
         this.secret = secret;
     }
 }

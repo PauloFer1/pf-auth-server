@@ -26,8 +26,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         final String header = request.getHeader(jwtConfig.getHeader());
-
-        if(header == null || !header.startsWith(jwtConfig.getPrefix())) {
+        if (!isValidHeader(header)) {
             chain.doFilter(request, response);
             return;
         }
@@ -35,27 +34,38 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
         final String token = header.replace(jwtConfig.getPrefix(), "");
 
         try {
-
-            final Claims claims = Jwts.parser()
-                    .setSigningKey(jwtConfig.getSecret().getBytes())
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            final String username = claims.getSubject();
-            if(username != null) {
-                @SuppressWarnings("unchecked")
-                final List<String> authorities = (List<String>) claims.get("authorities");
-
-                final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        username, null, authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
-
+            buildSecurityContext(token);
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
         }
-
         chain.doFilter(request, response);
+    }
+
+    private boolean isValidHeader(final String header) {
+        return header != null && header.startsWith(jwtConfig.getPrefix());
+    }
+
+    private void buildSecurityContext(final String token) {
+        final Claims claims = Jwts.parser()
+                .setSigningKey(jwtConfig.getSecret().getBytes())
+                .parseClaimsJws(token)
+                .getBody();
+
+        final String username = claims.getSubject();
+
+        if (username != null) {
+            @SuppressWarnings("unchecked") final List<String> authorities = (List<String>) claims.get("authorities");
+
+            final UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(
+                            username,
+                            null,
+                            authorities.stream()
+                                    .map(SimpleGrantedAuthority::new)
+                                    .collect(Collectors.toList())
+                    );
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
     }
 }

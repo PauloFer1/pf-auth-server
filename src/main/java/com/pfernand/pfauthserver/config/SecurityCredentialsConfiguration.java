@@ -1,11 +1,10 @@
 package com.pfernand.pfauthserver.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pfernand.pfauthserver.security.TokenFactory;
 import com.pfernand.pfauthserver.security.JwtConfig;
 import com.pfernand.pfauthserver.security.JwtTokenAuthenticationFilter;
 import com.pfernand.pfauthserver.security.JwtUserAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
@@ -18,21 +17,28 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.inject.Named;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 
 @EnableWebSecurity
 public class SecurityCredentialsConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
     private UserDetailsService userDetailsService;
-
-    @Autowired
     private JwtConfig jwtConfig;
-
-    @Autowired
     private ObjectMapper objectMapper;
+    private TokenFactory tokenFactory;
+
+    @Inject
+    public SecurityCredentialsConfiguration(final UserDetailsService userDetailsService,
+                                            final JwtConfig jwtConfig,
+                                            final ObjectMapper objectMapper,
+                                            final TokenFactory tokenFactory) {
+        this.userDetailsService = userDetailsService;
+        this.jwtConfig = jwtConfig;
+        this.objectMapper = objectMapper;
+        this.tokenFactory = tokenFactory;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -43,7 +49,7 @@ public class SecurityCredentialsConfiguration extends WebSecurityConfigurerAdapt
                 .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtUserAuthenticationFilter(authenticationManager(), jwtConfig, objectMapper))
+                .addFilter(new JwtUserAuthenticationFilter(authenticationManager(), objectMapper, tokenFactory, jwtConfig))
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
                 .anyRequest().authenticated();

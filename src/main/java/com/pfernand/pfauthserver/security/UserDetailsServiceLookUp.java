@@ -1,4 +1,4 @@
-package com.pfernand.pfauthserver.core;
+package com.pfernand.pfauthserver.security;
 
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.port.secondary.AuthenticationQuery;
