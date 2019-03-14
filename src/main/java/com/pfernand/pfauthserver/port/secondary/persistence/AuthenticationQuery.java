@@ -1,4 +1,4 @@
-package com.pfernand.pfauthserver.port.secondary;
+package com.pfernand.pfauthserver.port.secondary.persistence;
 
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 

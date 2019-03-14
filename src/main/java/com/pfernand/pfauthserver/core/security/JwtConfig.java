@@ -1,4 +1,4 @@
-package com.pfernand.pfauthserver.security;
+package com.pfernand.pfauthserver.core.security;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

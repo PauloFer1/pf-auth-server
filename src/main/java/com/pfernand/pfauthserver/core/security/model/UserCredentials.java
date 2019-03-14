@@ -1,4 +1,4 @@
-package com.pfernand.pfauthserver.security;
+package com.pfernand.pfauthserver.core.security.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

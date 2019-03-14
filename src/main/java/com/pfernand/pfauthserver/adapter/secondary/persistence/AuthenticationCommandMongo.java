@@ -1,8 +1,8 @@
-package com.pfernand.pfauthserver.adapter.secondary;
+package com.pfernand.pfauthserver.adapter.secondary.persistence;
 
 import com.pfernand.pfauthserver.config.DatabaseConfiguration;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
-import com.pfernand.pfauthserver.port.secondary.AuthenticationCommand;
+import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;

@@ -1,9 +1,9 @@
-package com.pfernand.pfauthserver.core;
+package com.pfernand.pfauthserver.core.service;
 
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
-import com.pfernand.pfauthserver.port.secondary.AuthenticationCommand;
-import com.pfernand.pfauthserver.port.secondary.AuthenticationQuery;
+import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationCommand;
+import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

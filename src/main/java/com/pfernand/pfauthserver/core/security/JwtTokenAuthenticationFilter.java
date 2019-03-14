@@ -1,4 +1,4 @@
-package com.pfernand.pfauthserver.security;
+package com.pfernand.pfauthserver.core.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

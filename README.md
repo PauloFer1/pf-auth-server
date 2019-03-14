@@ -13,3 +13,7 @@ db.user.insertOne({email:"admin", password: "$2a$10$SOnxme6xPgTap68/jUzmnOdzPIpV
 	"username": "admin",
 	"password": "pass"
 }
+
+### MongoDb Collections
+db.user.find({})
+db.refresh_token.find({})

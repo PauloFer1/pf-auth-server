@@ -1,4 +1,4 @@
-package com.pfernand.pfauthserver.port.primary;
+package com.pfernand.pfauthserver.port.primary.api;
 
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 

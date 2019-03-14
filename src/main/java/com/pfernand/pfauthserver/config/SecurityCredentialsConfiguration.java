@@ -1,10 +1,11 @@
 package com.pfernand.pfauthserver.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pfernand.pfauthserver.security.TokenFactory;
-import com.pfernand.pfauthserver.security.JwtConfig;
-import com.pfernand.pfauthserver.security.JwtTokenAuthenticationFilter;
-import com.pfernand.pfauthserver.security.JwtUserAuthenticationFilter;
+import com.pfernand.pfauthserver.port.secondary.persistence.RefreshTokenCommand;
+import com.pfernand.pfauthserver.core.security.TokenFactory;
+import com.pfernand.pfauthserver.core.security.JwtConfig;
+import com.pfernand.pfauthserver.core.security.JwtTokenAuthenticationFilter;
+import com.pfernand.pfauthserver.core.security.JwtUserAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
@@ -28,16 +29,19 @@ public class SecurityCredentialsConfiguration extends WebSecurityConfigurerAdapt
     private JwtConfig jwtConfig;
     private ObjectMapper objectMapper;
     private TokenFactory tokenFactory;
+    private RefreshTokenCommand refreshTokenCommand;
 
     @Inject
     public SecurityCredentialsConfiguration(final UserDetailsService userDetailsService,
                                             final JwtConfig jwtConfig,
                                             final ObjectMapper objectMapper,
-                                            final TokenFactory tokenFactory) {
+                                            final TokenFactory tokenFactory,
+                                            final RefreshTokenCommand refreshTokenCommand) {
         this.userDetailsService = userDetailsService;
         this.jwtConfig = jwtConfig;
         this.objectMapper = objectMapper;
         this.tokenFactory = tokenFactory;
+        this.refreshTokenCommand = refreshTokenCommand;
     }
 
     @Override
@@ -49,9 +53,10 @@ public class SecurityCredentialsConfiguration extends WebSecurityConfigurerAdapt
                 .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtUserAuthenticationFilter(authenticationManager(), objectMapper, tokenFactory, jwtConfig))
+                .addFilter(new JwtUserAuthenticationFilter(authenticationManager(), objectMapper, tokenFactory, jwtConfig, refreshTokenCommand))
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
+                .antMatchers(HttpMethod.POST, "/refresh-token").permitAll()
                 .anyRequest().authenticated();
     }
 

@@ -1,8 +1,8 @@
-package com.pfernand.pfauthserver.adapter.primary;
+package com.pfernand.pfauthserver.adapter.primary.api;
 
-import com.pfernand.pfauthserver.core.AuthenticationService;
+import com.pfernand.pfauthserver.core.service.AuthenticationService;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
-import com.pfernand.pfauthserver.port.primary.AuthenticationApi;
+import com.pfernand.pfauthserver.port.primary.api.AuthenticationApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

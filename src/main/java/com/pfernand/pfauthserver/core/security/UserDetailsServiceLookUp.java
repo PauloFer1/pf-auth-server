@@ -1,7 +1,7 @@
-package com.pfernand.pfauthserver.security;
+package com.pfernand.pfauthserver.core.security;
 
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
-import com.pfernand.pfauthserver.port.secondary.AuthenticationQuery;
+import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;

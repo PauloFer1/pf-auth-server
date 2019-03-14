@@ -1,5 +1,6 @@
-package com.pfernand.pfauthserver.adapter.secondary;
+package com.pfernand.pfauthserver.adapter.secondary.persistence;
 
+import com.pfernand.pfauthserver.adapter.secondary.persistence.AuthenticationCommandMongo;
 import com.pfernand.pfauthserver.config.DatabaseConfiguration;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import org.junit.Test;

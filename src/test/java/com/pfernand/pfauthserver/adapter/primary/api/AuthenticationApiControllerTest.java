@@ -1,6 +1,6 @@
-package com.pfernand.pfauthserver.adapter.primary;
+package com.pfernand.pfauthserver.adapter.primary.api;
 
-import com.pfernand.pfauthserver.core.AuthenticationService;
+import com.pfernand.pfauthserver.core.service.AuthenticationService;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import org.junit.Test;
 import org.junit.runner.RunWith;
