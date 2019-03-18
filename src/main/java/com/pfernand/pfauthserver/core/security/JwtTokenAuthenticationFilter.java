@@ -12,6 +12,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
     private void buildSecurityContext(final String token) {
         final Claims claims = Jwts.parser()
-                .setSigningKey(jwtConfig.getSecret().getBytes())
+                .setSigningKey(DatatypeConverter.parseBase64Binary(jwtConfig.getSecret()))
                 .parseClaimsJws(token)
                 .getBody();
 
