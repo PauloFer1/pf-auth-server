@@ -6,6 +6,7 @@ import com.pfernand.pfauthserver.port.secondary.persistence.RefreshTokenCommand;
 import com.pfernand.pfauthserver.core.security.model.AuthenticationResponse;
 import com.pfernand.pfauthserver.core.security.model.RefreshTokenSession;
 import com.pfernand.pfauthserver.core.security.model.UserCredentials;
+import com.pfernand.security.JwtConfig;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

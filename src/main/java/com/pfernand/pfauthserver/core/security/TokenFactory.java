@@ -1,6 +1,7 @@
 package com.pfernand.pfauthserver.core.security;
 
 import com.pfernand.pfauthserver.core.security.model.AccessTokenSession;
+import com.pfernand.security.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -26,7 +27,7 @@ public class TokenFactory {
 
     public AccessTokenSession createAccessToken(final String subject, final List<String> roles) {
         final Instant now = Instant.now();
-        final Instant expirationTime = now.plusSeconds(jwtConfig.getExpiration() * 1000);
+        final Instant expirationTime = now.plusSeconds(jwtConfig.getExpiration());
         final Instant notBefore = now.minusSeconds(1);
 
         final String signedToken = Jwts.builder()

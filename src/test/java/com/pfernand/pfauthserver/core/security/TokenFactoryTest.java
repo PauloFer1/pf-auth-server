@@ -1,9 +1,8 @@
 package com.pfernand.pfauthserver.core.security;
 
 import com.pfernand.pfauthserver.core.security.model.AccessTokenSession;
-import io.jsonwebtoken.Claims;
+import com.pfernand.security.JwtConfig;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +50,8 @@ public class TokenFactoryTest {
 
         // Then
         assertThat(accessTokenSession.getExpirationTime())
-                .isBetween(Instant.now().plusSeconds(JWT_EXPIRATION * 1000).minusSeconds(3), Instant.now().plusSeconds(JWT_EXPIRATION * 1000));
+                .isBetween(Instant.now().plusSeconds(JWT_EXPIRATION
+                ).minusSeconds(3), Instant.now().plusSeconds(JWT_EXPIRATION * 1000));
         assertThat(accessTokenSession.getNotBefore())
                 .isBetween(Instant.now().minusSeconds(4), Instant.now());
         assertThat(accessTokenSession.getType()).isEqualTo(JWT_PREFIX);
