@@ -39,7 +39,8 @@ public class RefreshTokenService {
 
         final AccessTokenSession accessTokenSession = tokenFactory.createAccessToken(
                 userAuthDetails.getEmail(),
-                Collections.singletonList(userAuthDetails.getRole())
+                Collections.singletonList(userAuthDetails.getRole()),
+                userAuthDetails.getSubject().getSubject()
         );
 
         refreshTokenCommand.saveSession(refreshTokenSession);

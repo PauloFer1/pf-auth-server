@@ -1,8 +1,8 @@
 package com.pfernand.pfauthserver.adapter.secondary.persistence;
 
-import com.pfernand.pfauthserver.adapter.secondary.persistence.AuthenticationCommandMongo;
 import com.pfernand.pfauthserver.config.DatabaseConfiguration;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,6 +23,7 @@ public class AuthenticationCommandMongoTest {
             .email(EMAIL)
             .password(PASSWORD)
             .role(ROLE)
+            .subject(UserAuthSubject.CUSTOMER)
             .build();
 
     @Mock

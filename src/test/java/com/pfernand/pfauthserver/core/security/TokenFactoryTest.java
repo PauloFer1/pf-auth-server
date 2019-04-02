@@ -25,10 +25,7 @@ public class TokenFactoryTest {
     private static final String JWT_PREFIX = "Bearer";
     private static final String JWT_SECRET = "JwtSecret";
     private static final int JWT_EXPIRATION = 3600;
-    private static final String AUDIENCE = "urn:pfernand:ww";
     private static final String SUBJECT_TYPE = "cst";
-    private static final String AUTHORITIES_HEADER = "authorities";
-    private static final String ISSUER = "auth-server";
 
     @Mock
     private JwtConfig jwtConfig;
@@ -46,7 +43,7 @@ public class TokenFactoryTest {
         Mockito.when(jwtConfig.getPrefix()).thenReturn(JWT_PREFIX);
         Mockito.when(jwtConfig.getSecret()).thenReturn(JWT_SECRET);
         Mockito.when(jwtConfig.getExpiration()).thenReturn(JWT_EXPIRATION);
-        final AccessTokenSession accessTokenSession = tokenFactory.createAccessToken(subject, roles);
+        final AccessTokenSession accessTokenSession = tokenFactory.createAccessToken(subject, roles, SUBJECT_TYPE);
 
         // Then
         assertThat(accessTokenSession.getExpirationTime())
@@ -56,8 +53,9 @@ public class TokenFactoryTest {
                 .isBetween(Instant.now().minusSeconds(4), Instant.now());
         assertThat(accessTokenSession.getType()).isEqualTo(JWT_PREFIX);
         assertThat(Jwts.parser().isSigned(accessTokenSession.getSignedToken())).isTrue();
-        log.info(Jwts.parser()
+        assertThat(Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(JWT_SECRET))
-                .parse(accessTokenSession.getSignedToken()).getBody().toString());
+                .parse(accessTokenSession.getSignedToken()).getBody().toString())
+                .contains("sub=urn:pfernand:ww:" + SUBJECT_TYPE + ":" + subject);
     }
 }

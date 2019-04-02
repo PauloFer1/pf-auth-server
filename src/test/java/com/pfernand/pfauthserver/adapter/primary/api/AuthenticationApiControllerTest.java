@@ -1,5 +1,6 @@
 package com.pfernand.pfauthserver.adapter.primary.api;
 
+import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.core.service.AuthenticationService;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import org.junit.Test;
@@ -24,6 +25,7 @@ public class AuthenticationApiControllerTest {
             .email(EMAIL)
             .password(PASSWORD)
             .role(ROLE)
+            .subject(UserAuthSubject.CUSTOMER)
             .build();
 
     @Mock
@@ -52,6 +54,7 @@ public class AuthenticationApiControllerTest {
                 .password(PASSWORD)
                 .role(ROLE)
                 .id(UUID.randomUUID().toString())
+                .subject(UserAuthSubject.CUSTOMER)
                 .build();
         // When
         Mockito.when(authenticationService.insertUser(USER_AUTH_DETAILS))

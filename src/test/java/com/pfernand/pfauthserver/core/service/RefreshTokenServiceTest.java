@@ -5,6 +5,7 @@ import com.pfernand.pfauthserver.core.exceptions.RefreshTokenNotFoundException;
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.core.model.UserAuthProperties;
+import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.core.security.TokenFactory;
 import com.pfernand.pfauthserver.core.security.model.AccessTokenSession;
 import com.pfernand.pfauthserver.core.security.model.RefreshTokenSession;
@@ -115,6 +116,7 @@ public class RefreshTokenServiceTest {
                 .password("password")
                 .email("email")
                 .id("id")
+                .subject(UserAuthSubject.CUSTOMER)
                 .build();
         final AccessTokenSession accessTokenSession = AccessTokenSession.builder()
                 .signedToken("token")
@@ -128,7 +130,9 @@ public class RefreshTokenServiceTest {
                 .thenReturn(Optional.of(refreshTokenSession));
         Mockito.when(authenticationQuery.getUserFromEmail(refreshTokenSession.getUserUuid()))
                 .thenReturn(Optional.of(userAuthDetails));
-        Mockito.when(tokenFactory.createAccessToken(userAuthDetails.getEmail(), Collections.singletonList(userAuthDetails.getRole())))
+        Mockito.when(tokenFactory.createAccessToken(userAuthDetails.getEmail(),
+                Collections.singletonList(userAuthDetails.getRole()),
+                userAuthDetails.getSubject().getSubject()))
                 .thenReturn(accessTokenSession);
         Mockito.when(refreshTokenCommand.saveSession(refreshTokenSession))
                 .thenReturn(refreshTokenSession);

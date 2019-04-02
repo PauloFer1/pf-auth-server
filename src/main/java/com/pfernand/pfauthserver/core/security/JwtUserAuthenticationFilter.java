@@ -2,11 +2,13 @@ package com.pfernand.pfauthserver.core.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pfernand.pfauthserver.core.security.model.AccessTokenSession;
+import com.pfernand.pfauthserver.core.security.model.UserSecurity;
 import com.pfernand.pfauthserver.port.secondary.persistence.RefreshTokenCommand;
 import com.pfernand.pfauthserver.core.security.model.AuthenticationResponse;
 import com.pfernand.pfauthserver.core.security.model.RefreshTokenSession;
 import com.pfernand.pfauthserver.core.security.model.UserCredentials;
 import com.pfernand.security.JwtConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class JwtUserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authManager;
@@ -54,7 +57,8 @@ public class JwtUserAuthenticationFilter extends UsernamePasswordAuthenticationF
                                             Authentication auth) throws IOException {
         final AccessTokenSession accessTokenSession = tokenFactory.createAccessToken(
                 auth.getName(),
-                auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+                auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()),
+                ((UserSecurity) auth.getPrincipal()).getSubject().getSubject() );
         final String refreshToken = tokenFactory.createRefreshToken();
 
         final AuthenticationResponse authenticationResponse = AuthenticationResponse.builder()
