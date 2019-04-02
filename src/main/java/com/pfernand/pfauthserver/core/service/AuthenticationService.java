@@ -20,18 +20,22 @@ public class AuthenticationService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public UserAuthDetails insertUser(final UserAuthDetails userAuthDetails) {
-        final UserAuthDetails encriptedUserAuthDetails = UserAuthDetails.builder()
-                .email(userAuthDetails.getEmail())
-                .password(bCryptPasswordEncoder.encode(userAuthDetails.getPassword()))
-                .role(userAuthDetails.getRole())
-                .build();
-        log.info("Inserting: {}", encriptedUserAuthDetails);
-        return authenticationCommand.insertUser(encriptedUserAuthDetails);
+        log.info("Inserting: {}", userAuthDetails.getEmail());
+        return authenticationCommand.insertUser(encriptUserPassword(userAuthDetails));
     }
 
     public UserAuthDetails retrieveUserFromEmail(final String email) {
         log.info("Retrieving info for: {}", email);
         return authenticationQuery.getUserFromEmail(email)
                 .orElseThrow(() -> new UserDetailsNotFoundException(email));
+    }
+
+    private UserAuthDetails encriptUserPassword(final UserAuthDetails userAuthDetails) {
+        return UserAuthDetails.builder()
+                .email(userAuthDetails.getEmail())
+                .password(bCryptPasswordEncoder.encode(userAuthDetails.getPassword()))
+                .role(userAuthDetails.getRole())
+                .subject(userAuthDetails.getSubject())
+                .build();
     }
 }

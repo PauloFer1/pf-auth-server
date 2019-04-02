@@ -2,6 +2,7 @@ package com.pfernand.pfauthserver.core;
 
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.core.service.AuthenticationService;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationCommand;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
@@ -29,6 +30,7 @@ public class AuthenticationServiceTest {
             .email(EMAIL)
             .password(PASSWORD)
             .role(ROLE)
+            .subject(UserAuthSubject.CUSTOMER)
             .build();
 
     @Mock
@@ -51,11 +53,13 @@ public class AuthenticationServiceTest {
                 .role(USER_AUTH_DETAILS.getRole())
                 .password(encodedPassword)
                 .email(USER_AUTH_DETAILS.getEmail())
+                .subject(UserAuthSubject.CUSTOMER)
                 .build();
         final UserAuthDetails expectedUserAuthDetails = UserAuthDetails.builder()
                 .role(USER_AUTH_DETAILS.getRole())
                 .password(USER_AUTH_DETAILS.getPassword())
                 .email(USER_AUTH_DETAILS.getEmail())
+                .subject(UserAuthSubject.CUSTOMER)
                 .id(UUID.randomUUID().toString())
                 .build();
 

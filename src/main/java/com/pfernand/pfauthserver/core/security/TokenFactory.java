@@ -19,13 +19,12 @@ import java.util.UUID;
 public class TokenFactory {
 
     private static final String AUDIENCE = "urn:pfernand:ww";
-    private static final String SUBJECT_TYPE = "cst";
     private static final String AUTHORITIES_HEADER = "authorities";
     private static final String ISSUER = "auth-server";
 
     private final JwtConfig jwtConfig;
 
-    public AccessTokenSession createAccessToken(final String subject, final List<String> roles) {
+    public AccessTokenSession createAccessToken(final String subject, final List<String> roles, final String subjectType) {
         final Instant now = Instant.now();
         final Instant expirationTime = now.plusSeconds(jwtConfig.getExpiration());
         final Instant notBefore = now.minusSeconds(1);
@@ -33,7 +32,7 @@ public class TokenFactory {
         final String signedToken = Jwts.builder()
                 .setClaims(buildClaims(subject, roles))
                 .setId(UUID.randomUUID().toString())
-                .setSubject(AUDIENCE + ":" + SUBJECT_TYPE + ":" + subject)
+                .setSubject(AUDIENCE + ":" + subjectType + ":" + subject)
                 .setAudience(AUDIENCE)
                 .setIssuer(AUDIENCE + ":" + ISSUER)
                 .setNotBefore(dateFromInstant(notBefore))

@@ -1,6 +1,7 @@
 package com.pfernand.pfauthserver.core.security;
 
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.core.security.model.UserSecurity;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,6 @@ public class UserDetailsServiceLookUp implements UserDetailsService {
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
                 .commaSeparatedStringToAuthorityList("ROLE_" + userAuthDetails.getRole());
 
-        return new User(userAuthDetails.getEmail(), userAuthDetails.getPassword(), grantedAuthorities);
+        return new UserSecurity(userAuthDetails.getEmail(), userAuthDetails.getPassword(), grantedAuthorities, userAuthDetails.getSubject());
     }
 }

@@ -1,8 +1,8 @@
 package com.pfernand.pfauthserver.adapter.secondary.persistence;
 
-import com.pfernand.pfauthserver.adapter.secondary.persistence.AuthenticationQueryMongo;
 import com.pfernand.pfauthserver.config.DatabaseConfiguration;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +29,7 @@ public class AuthenticationQueryMongoTest {
             .email(EMAIL)
             .password(PASSWORD)
             .role(ROLE)
+            .subject(UserAuthSubject.CUSTOMER)
             .build();
 
     private final Query query = new Query();
