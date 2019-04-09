@@ -70,11 +70,13 @@ public class JwtUserAuthenticationFilter extends UsernamePasswordAuthenticationF
 
         updateResponseWithAuthentication(response, authenticationResponse);
 
-        refreshTokenCommand.saveSession(RefreshTokenSession.builder()
+        final RefreshTokenSession refreshTokenSession = RefreshTokenSession.builder()
                 .refreshToken(refreshToken)
                 .expirationDate(accessTokenSession.getExpirationTime())
                 .userUuid(auth.getName())
-                .build());
+                .build();
+
+        refreshTokenCommand.saveSession(refreshTokenSession);
     }
 
     private UsernamePasswordAuthenticationToken buildAuthentication(final HttpServletRequest request) {
