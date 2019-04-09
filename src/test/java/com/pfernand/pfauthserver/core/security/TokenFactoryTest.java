@@ -58,4 +58,14 @@ public class TokenFactoryTest {
                 .parse(accessTokenSession.getSignedToken()).getBody().toString())
                 .contains("sub=urn:pfernand:ww:" + SUBJECT_TYPE + ":" + subject);
     }
+
+    @Test
+    public void createRefreshTokenReturnString() {
+        // Given
+        // When
+        final String refreshToken = tokenFactory.createRefreshToken();
+
+        // Then
+        assertThat(refreshToken.length()).isEqualTo(32);
+    }
 }
