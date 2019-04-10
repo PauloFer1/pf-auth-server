@@ -34,8 +34,8 @@ public class RefreshTokenCommandMongoTest {
                 .build();
 
         // When
-        Mockito.doNothing().when(mongoTemplate)
-                .insert(refreshTokenSession, DatabaseConfiguration.MONGO_COLLECTIONS.REFRESH_TOKEN_COLLECTION.collection());
+        Mockito.when(mongoTemplate.insert(refreshTokenSession, DatabaseConfiguration.MONGO_COLLECTIONS.REFRESH_TOKEN_COLLECTION.collection()))
+            .thenReturn(refreshTokenSession);
 
         RefreshTokenSession refreshTokenSessionResult = refreshTokenCommandMongo.saveSession(refreshTokenSession);
 

@@ -36,9 +36,8 @@ public class AuthenticationCommandMongoTest {
     public void insertUserWithValidValues() {
         // Given
         // When
-        Mockito.doNothing()
-                .when(mongoTemplate)
-                .insert(USER_AUTH_DETAILS, DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection());
+        Mockito.when(mongoTemplate.insert(USER_AUTH_DETAILS, DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection()))
+                .thenReturn(USER_AUTH_DETAILS);
         UserAuthDetails userAuthDetails = authenticationCommandMongo.insertUser(USER_AUTH_DETAILS);
 
         // Then
