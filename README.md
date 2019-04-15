@@ -4,7 +4,36 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=PauloFer1_pf-auth-server&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=PauloFer1_pf-auth-server)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=PauloFer1_pf-auth-server&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=PauloFer1_pf-auth-server)
 
-Provide JWT tokens to authenticate in pf applications.
+Provide Authentication/Authorization to use in pf applications (JWT access and refresh token).
+Creates Users with specific roles.
+(Work in progress)
+
+## Requests
+POST /user
+```
+Authorization:Bearer token
+{
+	"email" : "admin11",
+	"password" : "pass",
+	"role" : "admin",
+	"subject" : "vst"
+}
+```
+GET /user/{email}
+```
+Authorization:Bearer token
+```
+POST /refresh-token
+```
+X-Refresh-Token:d26aefe8413c49088b1f3ce487e97a29
+```
+POST /auth
+```
+{
+    "username": "admin",
+    "password": "pass"
+}
+```
 
 ## Setup
 This service uses MongoDB, to run it locally:
