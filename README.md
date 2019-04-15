@@ -4,8 +4,8 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=PauloFer1_pf-auth-server&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=PauloFer1_pf-auth-server)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=PauloFer1_pf-auth-server&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=PauloFer1_pf-auth-server)
 
-Provide Authentication/Authorization to use in pf applications (JWT access and refresh token).
-Creates Users with specific roles.
+- Provide Authentication/Authorization to use in pf applications (JWT access and refresh token).
+- Creates Users with specific roles.
 (Work in progress)
 
 ## Requests
