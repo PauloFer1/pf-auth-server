@@ -53,7 +53,6 @@ public class AuthenticationApiControllerTest {
                 .email(EMAIL)
                 .password(PASSWORD)
                 .role(ROLE)
-                .id(UUID.randomUUID().toString())
                 .subject(UserAuthSubject.CUSTOMER)
                 .build();
         // When

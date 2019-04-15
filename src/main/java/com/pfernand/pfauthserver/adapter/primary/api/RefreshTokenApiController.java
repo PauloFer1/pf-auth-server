@@ -7,9 +7,8 @@ import com.pfernand.pfauthserver.core.security.model.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -21,7 +20,7 @@ public class RefreshTokenApiController implements RefreshTokenApi<ResponseEntity
     private final AuthenticationResponseMapper authenticationResponseMapper;
 
     @Override
-    @RequestMapping(value = "/refresh-token", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/refresh-token", produces = "application/json")
     public ResponseEntity<AuthenticationResponse> refresh(@RequestHeader(value = "X-Refresh-Token", defaultValue = "") String refreshToken) {
         log.info("POST /auth/refresh-token with params {}", refreshToken);
         return ResponseEntity.ok(authenticationResponseMapper.map(refreshTokenService.refreshToken(refreshToken)));
