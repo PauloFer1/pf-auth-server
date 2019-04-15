@@ -115,7 +115,6 @@ public class RefreshTokenServiceTest {
                 .role("role")
                 .password("password")
                 .email("email")
-                .id("id")
                 .subject(UserAuthSubject.CUSTOMER)
                 .build();
         final AccessTokenSession accessTokenSession = AccessTokenSession.builder()

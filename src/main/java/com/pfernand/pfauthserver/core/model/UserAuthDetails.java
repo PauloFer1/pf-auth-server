@@ -12,8 +12,6 @@ import org.springframework.data.annotation.Id;
 @RequiredArgsConstructor
 @JsonDeserialize(builder = UserAuthDetails.UserBuilder.class)
 public class UserAuthDetails {
-    @Id
-    private final String id;
     private final String email;
     private final String password;
     private final String role;

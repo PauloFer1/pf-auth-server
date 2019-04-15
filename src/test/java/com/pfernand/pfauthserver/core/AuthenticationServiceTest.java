@@ -60,7 +60,6 @@ public class AuthenticationServiceTest {
                 .password(USER_AUTH_DETAILS.getPassword())
                 .email(USER_AUTH_DETAILS.getEmail())
                 .subject(UserAuthSubject.CUSTOMER)
-                .id(UUID.randomUUID().toString())
                 .build();
 
         // When
