@@ -25,6 +25,8 @@
 		<jjwt.version>0.6.0</jjwt.version>
 		<javax.inject.version>1</javax.inject.version>
 		<findbugs-annotation.version>2.0.1</findbugs-annotation.version>
+		<unirest.version>1.4.9</unirest.version>
+		<fongo.version>2.1.1</fongo.version>
 
 		<jacoco-plugin.version>0.8.2</jacoco-plugin.version>
 		<findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
@@ -88,6 +90,24 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<version>2.2.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.fakemongo</groupId>
+			<artifactId>fongo</artifactId>
+			<version>${fongo.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mashape.unirest</groupId>
+			<artifactId>unirest-java</artifactId>
+			<version>${unirest.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
