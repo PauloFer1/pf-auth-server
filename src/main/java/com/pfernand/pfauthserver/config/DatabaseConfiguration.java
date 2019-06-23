@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.convert.CustomConversions;
 import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
@@ -47,6 +48,11 @@ public class DatabaseConfiguration
     @Bean
     public MongoTemplate mongoTemplate(final MongoDbFactory mongoDbFactory, final MappingMongoConverter mongoConverter) {
         return new MongoTemplate(mongoDbFactory, mongoConverter);
+    }
+
+    @Bean
+    MongoTransactionManager transactionManager(MongoDbFactory mongoDbFactory) {
+        return new MongoTransactionManager(mongoDbFactory);
     }
 
     @Bean

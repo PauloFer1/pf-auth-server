@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: auth-service
+  kafka:
+    bootstrap-servers: kafka-3a84ca08-paulo-415b.aivencloud.com:26668
+    properties:
+      security:
+        protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas:
+          config: org.apache.kafka.common.security.plain.PlainLoginModule required username="avnadmin" password="yjxekdzm5ce12r6m";
+    specific.avro.reader: true
+    ssl:
+      truststore-location: file:/tmp/client.truststore.jks
+      truststore-password: msc74kuy1hdugrif
+    producer:
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        schema.registry.url: http://mock:8081
+
+kafka:
+  topicName: poc
+
+security:
+  jwt:
+    uri: /auth/**
+    header: Authorization
+    prefix: Bearer
+    expiration: 190
+    secret: JwtSecretKey
+
+
+mongodb:
+  host: 0.0.0.0
+  database:
+    name: pf-auth
+
+schema.registry.url: http://mock:8081
+
