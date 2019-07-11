@@ -1,5 +1,6 @@
 package com.pfernand.pfauthserver;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,6 +25,7 @@ public class PfAuthServerApplication {
 		SpringApplication.run(PfAuthServerApplication.class, args);
 	}
 
+	@SuppressFBWarnings
 	private static void copyJksToTemp() throws IOException {
 		FileCopyUtils.copy(new ClassPathResource(JKS_FILE_NAME).getInputStream(),
 				new FileOutputStream("/tmp/" + JKS_FILE_NAME));

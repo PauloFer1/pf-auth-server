@@ -30,6 +30,9 @@
 		<avro.version>1.9.0</avro.version>
 		<avro.serializer.version>5.0.0</avro.serializer.version>
 		<wiremock.version>2.23.2</wiremock.version>
+		<spring-boot.version>2.1.1.RELEASE</spring-boot.version>
+		<micrometer-registry-cloudwatch.version>1.2.0</micrometer-registry-cloudwatch.version>
+		<pf-auth-filter.version>0.0.1-SNAPSHOT</pf-auth-filter.version>
 
 		<jacoco-plugin.version>0.8.2</jacoco-plugin.version>
 		<findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
@@ -76,7 +79,7 @@
 		<dependency>
 			<groupId>com.pfernand</groupId>
 			<artifactId>pf-auth-filter</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${pf-auth-filter.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
@@ -107,6 +110,32 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.cloud</groupId>-->
+<!--			<artifactId>spring-cloud-aws-autoconfigure</artifactId>-->
+<!--			<version>${spring-boot.version}</version>-->
+<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-aws</artifactId>
+			<version>${spring-boot.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.amazonaws</groupId>
+					<artifactId>aws-java-sdk-s3</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.amazonaws</groupId>
+					<artifactId>aws-java-sdk-cloudformation</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-cloudwatch</artifactId>
+			<version>${micrometer-registry-cloudwatch.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

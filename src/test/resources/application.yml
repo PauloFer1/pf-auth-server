@@ -2,26 +2,17 @@ spring:
   application:
     name: auth-service
   kafka:
-    bootstrap-servers: kafka-3a84ca08-paulo-415b.aivencloud.com:26668
+    topicName: poc
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
     properties:
-      security:
-        protocol: SASL_SSL
-      sasl:
-        mechanism: PLAIN
-        jaas:
-          config: org.apache.kafka.common.security.plain.PlainLoginModule required username="avnadmin" password="yjxekdzm5ce12r6m";
-    specific.avro.reader: true
-    ssl:
-      truststore-location: file:/tmp/client.truststore.jks
-      truststore-password: msc74kuy1hdugrif
+      specific.avro.reader: true
     producer:
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:
         schema.registry.url: http://mock:8081
-
-kafka:
-  topicName: poc
+    consumer:
+      group-id: poc
 
 security:
   jwt:
@@ -37,5 +28,14 @@ mongodb:
   database:
     name: pf-auth
 
-schema.registry.url: http://mock:8081
 
+cloud:
+  aws:
+    credentials:
+      instanceProfile: true
+    region.static: us-east-1
+    stack.auto: false
+
+schema:
+  registry:
+    url: http://mock:8081

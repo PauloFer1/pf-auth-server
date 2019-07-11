@@ -57,6 +57,9 @@ public class SecurityCredentialsConfiguration extends WebSecurityConfigurerAdapt
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
                 .antMatchers(HttpMethod.POST, "/refresh-token").permitAll()
+                .antMatchers("/metrics/**").permitAll()
+                .antMatchers("/info").permitAll()
+                .antMatchers("/health").permitAll()
                 .anyRequest().authenticated();
     }
 

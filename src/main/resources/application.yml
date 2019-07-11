@@ -1,9 +1,32 @@
+info:
+  app:
+    name: pf-auth-server
+    description: Authentication Service
+    version: ${project.parent.version}
+
+management:
+    endpoints:
+      web:
+        base-path:
+        exposure.include: "*"
+      metrics.enabled: true
+      info.enabled: true
+      health.enabled: true
+    metrics:
+      export:
+        cloudwatch:
+          namespace: pf-auth-server-metrics
+          batchSize: 20
+
 spring:
   application:
     name: auth-service
   kafka:
     bootstrap-servers: kafka-3a84ca08-paulo-415b.aivencloud.com:26668
     properties:
+      specific.avro.reader: true
+      request.timeout.ms: 60000
+      linger.ms: 0
       security:
         protocol: SASL_SSL
       sasl:
@@ -21,7 +44,9 @@ spring:
         schema.registry.url: http://localhost:8081
       retries: 3
       acks: 1
-      batch-size: 3
+      batch-size: 0
+      ack-timeout-secs: 60
+      buffer-memory: 200
 
 kafka:
   topicName: poc
@@ -39,8 +64,10 @@ security:
     uri: /auth/**
     header: Authorization
     prefix: Bearer
-    expiration: 190
+    expiration: 600
     secret: JwtSecretKey
+    refresh.expiration: 3600
+
 
 
 mongodb:
@@ -51,3 +78,11 @@ mongodb:
 logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+cloud:
+  aws:
+    credentials:
+      instanceProfile: true
+    region.static: us-east-1
+    stack.auto: false
+
