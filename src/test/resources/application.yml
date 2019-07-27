@@ -1,4 +1,7 @@
 spring:
+  data:
+    mongodb:
+      port: 27017
   application:
     name: auth-service
   kafka:
@@ -24,7 +27,7 @@ security:
 
 
 mongodb:
-  host: 0.0.0.0
+  host: localhost
   database:
     name: pf-auth
 
