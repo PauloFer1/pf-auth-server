@@ -37,7 +37,7 @@ POST /auth
 
 ## Setup locally 
 ### Mongo DB
-##### This service needs MongoDB 4.0+, as uses transactions
+##### This service needs MongoDB 4.0+, as it uses transactions
 Start Mongo:
 ```
     ./tools/mongoDB/start-mongo.sh
@@ -76,3 +76,8 @@ Generate AVRO sources:
 ```
 mvn generate-sources
 ```
+
+### Integration Tests
+- EmbeddedKafka is used to spin up a local cluster
+- Mock Beans for SerDe are created to use SchemaRegistryClient
+- TestContainer is used to download a MongoDB image and spin up a local cluster with support for sessions (Docker is needed)
