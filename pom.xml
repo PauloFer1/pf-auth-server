@@ -33,6 +33,8 @@
 		<spring-boot.version>2.1.1.RELEASE</spring-boot.version>
 		<micrometer-registry-cloudwatch.version>1.2.0</micrometer-registry-cloudwatch.version>
 		<pf-auth-filter.version>0.0.1-SNAPSHOT</pf-auth-filter.version>
+		<testcontainers.version>1.12.0</testcontainers.version>
+		<jackson-mapper-asl.version>1.9.13</jackson-mapper-asl.version>
 
 		<jacoco-plugin.version>0.8.2</jacoco-plugin.version>
 		<findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
@@ -128,36 +130,9 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
-			<version>1.12.0</version>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
 		</dependency>
-		<!--		<dependency>-->
-<!--			<groupId>de.bwaldvogel</groupId>-->
-<!--			<artifactId>mongo-java-server</artifactId>-->
-<!--			<version>1.17.1</version>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>cz.jirutka.spring</groupId>-->
-<!--			<artifactId>embedmongo-spring</artifactId>-->
-<!--			<version>1.3.1</version>-->
-<!--			<scope>test</scope>-->
-<!--			<exclusions>-->
-<!--				<exclusion>-->
-<!--					<groupId>de.flapdoodle.embed</groupId>-->
-<!--					<artifactId>de.flapdoodle.embed.mongo</artifactId>-->
-<!--				</exclusion>-->
-<!--				<exclusion>-->
-<!--					<groupId>de.flapdoodle.embed</groupId>-->
-<!--					<artifactId>de.flapdoodle.embed.process</artifactId>-->
-<!--				</exclusion>-->
-<!--			</exclusions>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>de.flapdoodle.embed</groupId>-->
-<!--			<artifactId>de.flapdoodle.embed.mongo</artifactId>-->
-<!--			<version>2.2.0</version>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>com.mashape.unirest</groupId>
 			<artifactId>unirest-java</artifactId>
@@ -171,15 +146,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-contract-wiremock</artifactId>
-			<version>2.1.1.RELEASE</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.13</version>
+			<version>${jackson-mapper-asl.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
