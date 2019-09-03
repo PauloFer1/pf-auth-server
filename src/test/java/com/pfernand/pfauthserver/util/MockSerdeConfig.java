@@ -22,6 +22,75 @@ import java.util.Map;
 @Configuration
 public class MockSerdeConfig {
 
+//    @Bean
+//    @Primary
+//	public Mongo mongoTest() throws IOException {
+//		return new EmbeddedMongoBuilder()
+//				.version("4.0.2")
+//				.bindIp("127.0.0.1")
+//				.port(27017)
+//				.build();
+//	}
+
+//    @Bean
+//    @Primary
+//    public MongoTemplate mongoTemplateTest() throws IOException {
+//        EmbeddedMongoFactoryBean mongo = new EmbeddedMongoFactoryBean();
+//        mongo.setBindIp("localhost");
+//        MongoClient mongoClient = mongo.getObject();
+//        MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, "pf-auth-db");
+//        return mongoTemplate;
+//    }
+
+//    @Bean
+//    @Primary
+//    public MongoClient mongoClientTest() throws IOException {
+//        MongodStarter runtime = MongodStarter.getDefaultInstance();
+//        int node1Port = 27017;
+//        int node2Port = 27018;
+//        MongodExecutable node1MongodExe;
+//        MongodProcess node1Mongod;
+//        MongoClient mongo;
+//        MongodExecutable node2MongodExe;
+//        MongodProcess node2Mongod;
+//
+//        node1MongodExe = runtime.prepare(new MongodConfigBuilder().version(Version.Main.V4_0)
+//                .withLaunchArgument("--replSet", "rs0")
+//                .cmdOptions(new MongoCmdOptionsBuilder().useNoJournal(false).build())
+//                .net(new Net(node1Port, Network.localhostIsIPv6())).build());
+//        node1Mongod = node1MongodExe.start();
+//
+//        node2MongodExe = runtime.prepare(new MongodConfigBuilder().version(Version.Main.V4_0)
+//                .withLaunchArgument("--replSet", "rs0")
+//                .cmdOptions(new MongoCmdOptionsBuilder().useNoJournal(false).build())
+//                .net(new Net(node2Port, Network.localhostIsIPv6())).build());
+//        node2Mongod = node2MongodExe.start();
+//
+//        mongo = new MongoClient(new ServerAddress(Network.getLocalHost(), node1Port));
+//
+//        MongoDatabase adminDatabase = mongo.getDatabase("admin");
+//
+//        Document config = new Document("_id", "rs0");
+//        BasicDBList members = new BasicDBList();
+//        members.add(new Document("_id", 0)
+//                .append("host", "localhost:" + node1Port));
+//        members.add(new Document("_id", 1)
+//                .append("host", "localhost:" + node2Port));
+//        config.put("members", members);
+//
+//        adminDatabase.runCommand(new org.bson.Document("replSetInitiate", config));
+//
+//        System.out.println(">>>>>>>>" + adminDatabase.runCommand(new org.bson.Document("replSetGetStatus", 1)));
+//
+//        return mongo;
+//    }
+
+//    @Bean
+//    @Primary
+//    public MongoDbFactory mongoDbFactoryTest(MongoClient mongoClient) {
+//        return new SimpleMongoDbFactory(mongoClient, "pf-auth-db");
+//    }
+
     @Bean
     @Primary
     SchemaRegistryClient schemaRegistryClient() {

@@ -39,11 +39,17 @@ public class DatabaseConfiguration
         }
     }
 
-    @Bean
-    MongoDbFactory mongoDbFactory(@Value("${mongodb.host}") final String mongoDbHost,
-                                  @Value("${mongodb.database.name}") final String databaseName) {
-        return new SimpleMongoDbFactory(new MongoClient(mongoDbHost), databaseName);
-    }
+//    @Bean
+//    MongoDbFactory mongoDbFactory(@Value("${mongodb.host}") final String mongoDbHost,
+//                                  @Value("${mongodb.database.name}") final String databaseName) {
+//        return new SimpleMongoDbFactory(new MongoClient(mongoDbHost), databaseName);
+//    }
+
+//    @Bean
+//    MongoDbFactory mongoDbFactory(@Value("${mongodb.connection.string}") final String mongoDbConnString,
+//                                  @Value("${mongodb.database.name}") final String databaseName) {
+//        return new SimpleMongoDbFactory(new MongoClient(mongoDbConnString), databaseName);
+//    }
 
     @Bean
     public MongoTemplate mongoTemplate(final MongoDbFactory mongoDbFactory, final MappingMongoConverter mongoConverter) {

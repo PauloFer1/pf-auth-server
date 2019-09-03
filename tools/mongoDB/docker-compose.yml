@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  mongodb:
+    image: mongo:4.0.2
+    container_name: pf-auth-mongo-db
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: pf-auth-db
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]

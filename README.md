@@ -50,9 +50,9 @@ Stop Mongo:
 #### User for manual test
 ```
 db.user.insertOne({email:"admin", password: "$2a$10$SOnxme6xPgTap68/jUzmnOdzPIpVUlUqmHbiA5Q0i6D3JLi2G8DlG", role: "admin", subject: "emp"})
-
+docker 
 {
-	"username": "admin",
+	"email": "admin",
 	"password": "pass"
 }
 ```

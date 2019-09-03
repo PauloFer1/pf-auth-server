@@ -19,10 +19,17 @@ management:
           batchSize: 20
 
 spring:
+  data:
+    mongodb:
+#      uri: mongodb://0.0.0.0:27017
+      uri: mongodb+srv://pf-auth-user:cesjid-0fyrMi-wejbeg@pf-auth-db-oosgz.mongodb.net/test?retryWrites=true&w=majority
+      database: pf-auth-db
+      replication:
+        replSetName: rs
   application:
     name: auth-service
   kafka:
-    bootstrap-servers: kafka-3a84ca08-paulo-415b.aivencloud.com:26668
+    bootstrap-servers: pkc-epgnk.us-central1.gcp.confluent.cloud:9092
     properties:
       specific.avro.reader: true
       request.timeout.ms: 60000
@@ -32,16 +39,25 @@ spring:
       sasl:
         mechanism: PLAIN
         jaas:
-          config: org.apache.kafka.common.security.plain.PlainLoginModule required username="avnadmin" password="yjxekdzm5ce12r6m";
+          config: org.apache.kafka.common.security.plain.PlainLoginModule required username="PI3YB2NIR57QB6BZ" password="pfqlg+UkPVNOdW2MNkBz0dDJMRLb1r3kV9I4Rx4n2otyskJ+O4RJPgoaNnZxU5d7";
     specific.avro.reader: true
     ssl:
-      truststore-location: file:/tmp/client.truststore.jks
-      truststore-password: msc74kuy1hdugrif
+      endpoint.identification.algorithm: http
+#      truststore-location: file:/tmp/client.truststore.jks
+#      truststore-password: msc74kuy1hdugrif
     producer:
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:
-        schema.registry.url: http://localhost:8081
+        basic:
+          auth:
+            credentials:
+              source: USER_INFO
+        schema:
+          registry:
+            url: https://psrc-e8157.us-east-2.aws.confluent.cloud
+            basic.auth.user.info: ZCXUTNNP73R7X4P4:QOGsfw0HO6ldvks+I56W73bmXVwEJx8YP7nnkpnhJNNnllW0v8lSg3nfV5CWk5Fk
+#        schema.registry.url: http://localhost:8081
       retries: 3
       acks: 1
       batch-size: 0
@@ -49,7 +65,7 @@ spring:
       buffer-memory: 200
 
 kafka:
-  topicName: poc
+  topicName: pf-auth-dev
 
 server:
   port: 9100
@@ -68,21 +84,7 @@ security:
     secret: JwtSecretKey
     refresh.expiration: 3600
 
-
-
-mongodb:
-  host: 0.0.0.0
-  database:
-    name: pf-auth
-
 logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
-
-cloud:
-  aws:
-    credentials:
-      instanceProfile: true
-    region.static: us-east-1
-    stack.auto: false
 

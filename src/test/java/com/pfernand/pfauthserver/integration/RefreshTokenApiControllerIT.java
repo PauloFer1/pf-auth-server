@@ -12,6 +12,7 @@ import com.pfernand.pfauthserver.util.MockSerdeConfig;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,13 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.containers.Container;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+
+
+import java.time.Duration;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,8 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {PfAuthServerApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application.yml")
 @Import(MockSerdeConfig.class)
-@EmbeddedKafka(partitions = 1, controlledShutdown = false,
-        brokerProperties = {"listeners=PLAINTEXT://localhost:3333", "port=3333"})
+@EmbeddedKafka(partitions = 1, controlledShutdown = true,
+        brokerProperties = {"listeners=PLAINTEXT://localhost:3332", "port=3332"})
 public class RefreshTokenApiControllerIT {
 
     private static final String TOPIC_NAME = "poc";
@@ -58,9 +66,44 @@ public class RefreshTokenApiControllerIT {
     @Autowired
     private SchemaRegistryClient schemaRegistryClient;
 
+    @ClassRule
+    public static GenericContainer mongoContainer = new GenericContainer("mongo:4.0.8")
+            .withExposedPorts(27017)
+            .waitingFor(Wait.forLogMessage(".*waiting for connections on port 27017.*", 1))
+            .withCommand("--replSet rs");
+
+
+    static {
+        Runnable runnable = () -> {
+            final long maxSecondsTry = 3;
+            final Instant now = Instant.now();
+            Instant inRunning;
+            while (!mongoContainer.isRunning()) {
+                inRunning = Instant.now();
+                if (Duration.between(now, inRunning).getSeconds() > maxSecondsTry) {
+                    throw new RuntimeException(String.format("Container is taking more then %d seconds to start", maxSecondsTry));
+                }
+            }
+            try {
+                Thread.sleep(500);
+                String address = "mongodb://" + mongoContainer.getContainerIpAddress() + ":" + mongoContainer.getFirstMappedPort() + "/pf-auth-db";
+                System.setProperty("spring.data.mongodb.uri", address);
+                Container.ExecResult lsResult = mongoContainer.execInContainer("/bin/bash", "-c", "mongo --eval 'rs.initiate()'");
+                System.out.println(String.format("[OUTPUT]: %s", lsResult.getStdout()));
+            } catch (Exception ex) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(ex.getMessage());
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
 
     @Before
     public void setUp() throws Exception {
+        mongoTemplate.createCollection("user");
+        mongoTemplate.createCollection("refresh-token");
         schemaRegistryClient.register(TOPIC_NAME + "-value", UserAuthentication.SCHEMA$);
         authenticationService.insertUser(ADMIN_USER);
     }
