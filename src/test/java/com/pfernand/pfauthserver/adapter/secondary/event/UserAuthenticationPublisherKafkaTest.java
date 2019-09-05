@@ -1,6 +1,7 @@
 package com.pfernand.pfauthserver.adapter.secondary.event;
 
 import com.pfernand.avro.UserAuthentication;
+import com.pfernand.pfauthserver.adapter.secondary.event.exception.EventSendException;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import org.junit.Before;
@@ -55,14 +56,6 @@ public class UserAuthenticationPublisherKafkaTest {
                 .subject(UserAuthSubject.CUSTOMER)
                 .build();
 
-        final UserAuthentication userAuthentication = UserAuthentication.newBuilder()
-                .setEmail(EMAIL)
-                .setRole(ROLE)
-                .setIndex(1)
-                .setUniqueId(UUID.randomUUID().toString())
-                .setTime(Instant.now().getEpochSecond())
-                .build();
-
         // When
         Mockito.when(kafkaTemplate.send(Mockito.eq(TOPIC_NAME), Mockito.anyString(), Mockito.any(UserAuthentication.class)))
                 .thenReturn(futureSendResult);
@@ -75,7 +68,6 @@ public class UserAuthenticationPublisherKafkaTest {
         Mockito.verify(kafkaTemplate).send(Mockito.eq(TOPIC_NAME), Mockito.anyString(), Mockito.any(UserAuthentication.class));
     }
 
-    //Todo, Tests for catch exception
     @Test
     public void publishEventThrowsException() throws Exception {
         // Given
@@ -100,7 +92,7 @@ public class UserAuthenticationPublisherKafkaTest {
                 .thenThrow(new TimeoutException("timeout"));
 
         // Then
-        assertThatExceptionOfType(RuntimeException.class)
+        assertThatExceptionOfType(EventSendException.class)
                 .isThrownBy(() -> userAuthenticationPublisherKafka.publishEvent(userAuthDetails))
                 .withMessageContaining("Could not send/acknowledged event from kafka. Will fail to insert user [Rollback].");
     }

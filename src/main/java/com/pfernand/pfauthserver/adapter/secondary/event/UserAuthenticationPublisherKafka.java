@@ -1,6 +1,7 @@
 package com.pfernand.pfauthserver.adapter.secondary.event;
 
 import com.pfernand.avro.UserAuthentication;
+import com.pfernand.pfauthserver.adapter.secondary.event.exception.EventSendException;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.port.secondary.event.UserAuthenticationPublisher;
 import lombok.extern.slf4j.Slf4j;
@@ -53,8 +54,7 @@ public class UserAuthenticationPublisherKafka implements UserAuthenticationPubli
         try {
             futureSendResult.get(ackTimeoutInSeconds, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException ex) {
-            // Todo - create dedicated exception
-            throw new RuntimeException("Could not send/acknowledged event from kafka. Will fail to insert user [Rollback].");
+            throw new EventSendException();
         }
         log.info(String.format("Event [%s] acknowledged from kafka", userAuthentication.getUniqueId()));
     }
