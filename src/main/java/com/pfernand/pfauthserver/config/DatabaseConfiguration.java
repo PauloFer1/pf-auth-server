@@ -1,9 +1,7 @@
 package com.pfernand.pfauthserver.config;
 
-import com.mongodb.MongoClient;
 import com.pfernand.pfauthserver.adapter.secondary.persistence.converter.UserAuthSubjectReadConverter;
 import com.pfernand.pfauthserver.adapter.secondary.persistence.converter.UserAuthSubjectWriterConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -11,7 +9,6 @@ import org.springframework.data.convert.CustomConversions;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
@@ -38,18 +35,6 @@ public class DatabaseConfiguration
             this.collection = collection;
         }
     }
-
-//    @Bean
-//    MongoDbFactory mongoDbFactory(@Value("${mongodb.host}") final String mongoDbHost,
-//                                  @Value("${mongodb.database.name}") final String databaseName) {
-//        return new SimpleMongoDbFactory(new MongoClient(mongoDbHost), databaseName);
-//    }
-
-//    @Bean
-//    MongoDbFactory mongoDbFactory(@Value("${mongodb.connection.string}") final String mongoDbConnString,
-//                                  @Value("${mongodb.database.name}") final String databaseName) {
-//        return new SimpleMongoDbFactory(new MongoClient(mongoDbConnString), databaseName);
-//    }
 
     @Bean
     public MongoTemplate mongoTemplate(final MongoDbFactory mongoDbFactory, final MappingMongoConverter mongoConverter) {
