@@ -1,0 +1,38 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://0.0.0.0:27017
+      database: pf-auth-db
+#  mongodb:
+#    embedded:
+#      storage:
+#        repl-set-name: "r_0"
+#      features: sync_delay,no_http_interface_arg,only_with_ssl
+#      version: 4.0.2
+  application:
+    name: auth-service
+  kafka:
+    topicName: poc
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    properties:
+      specific.avro.reader: true
+    producer:
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        schema.registry.url: http://mock:8081
+    consumer:
+      group-id: poc
+
+security:
+  jwt:
+    uri: /auth/**
+    header: Authorization
+    prefix: Bearer
+    expiration: 190
+    secret: JwtSecretKey
+
+schema:
+  registry:
+    url: http://mock:8081
+

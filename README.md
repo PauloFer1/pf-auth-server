@@ -35,22 +35,49 @@ POST /auth
 }
 ```
 
-## Setup
-This service uses MongoDB, to run it locally:
-- docker run -d -p 27017:27017 -p 28017:28017 -e AUTH=no bitnami/mongodb:latest
+## Setup locally 
+### Mongo DB
+##### This service needs MongoDB 4.0+, as it uses transactions
+Start Mongo:
+```
+    ./tools/mongoDB/start-mongo.sh
+```
+Stop Mongo:
+```
+    ./tools/mongoDB/stop-mongo.sh
+```
 
-### User for manual test
+#### User for manual test
 ```
 db.user.insertOne({email:"admin", password: "$2a$10$SOnxme6xPgTap68/jUzmnOdzPIpVUlUqmHbiA5Q0i6D3JLi2G8DlG", role: "admin", subject: "emp"})
-
+docker 
 {
-	"username": "admin",
+	"email": "admin",
 	"password": "pass"
 }
 ```
 
-### MongoDb Collections
+#### MongoDb Collections
 ```
 db.user.find({})
 db.refresh_token.find({})
 ```
+
+### Kafka and Schema registry
+##### This service uses Kafka and Confluence Schema registry, a docker-compose is provided with both running under Zookeeper 
+```
+    1. go to tools/kafka
+    2. docker-compose up -d
+```
+
+
+### AVRO
+Generate AVRO sources:
+```
+mvn generate-sources
+```
+
+### Integration Tests
+- EmbeddedKafka is used to spin up a local cluster
+- Mock Beans for SerDe are created to use SchemaRegistryClient
+- TestContainer is used to download a MongoDB image and spin up a local cluster with support for sessions (Docker is needed)

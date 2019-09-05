@@ -1,9 +1,9 @@
-package com.pfernand.pfauthserver.core;
+package com.pfernand.pfauthserver.core.service;
 
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
-import com.pfernand.pfauthserver.core.service.AuthenticationService;
+import com.pfernand.pfauthserver.port.secondary.event.UserAuthenticationPublisher;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationCommand;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
 import org.junit.Test;
@@ -15,7 +15,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -41,6 +40,9 @@ public class AuthenticationServiceTest {
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Mock
+    private UserAuthenticationPublisher userAuthenticationPublisher;
 
     @InjectMocks
     private AuthenticationService authenticationService;
@@ -71,6 +73,7 @@ public class AuthenticationServiceTest {
 
         // Then
         assertEquals(expectedUserAuthDetails, userAuthDetails);
+        Mockito.verify(userAuthenticationPublisher).publishEvent(expectedUserAuthDetails);
     }
 
     @Test

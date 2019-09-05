@@ -27,10 +27,19 @@
 		<findbugs-annotation.version>2.0.1</findbugs-annotation.version>
 		<unirest.version>1.4.9</unirest.version>
 		<fongo.version>2.1.1</fongo.version>
+		<avro.version>1.9.0</avro.version>
+		<avro.serializer.version>5.0.0</avro.serializer.version>
+		<wiremock.version>2.23.2</wiremock.version>
+		<spring-boot.version>2.1.1.RELEASE</spring-boot.version>
+		<micrometer-registry-cloudwatch.version>1.2.0</micrometer-registry-cloudwatch.version>
+		<pf-auth-filter.version>0.0.1-SNAPSHOT</pf-auth-filter.version>
+		<testcontainers.version>1.12.0</testcontainers.version>
+		<jackson-mapper-asl.version>1.9.13</jackson-mapper-asl.version>
 
 		<jacoco-plugin.version>0.8.2</jacoco-plugin.version>
 		<findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
 		<pmd.version>3.8</pmd.version>
+		<build-helper-maven.version>3.0.0</build-helper-maven.version>
 
 		<skip.integration.tests>true</skip.integration.tests>
 		<skip.unit.tests>false</skip.unit.tests>
@@ -39,6 +48,13 @@
 		<jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
 		<docker.image.prefix>pfernand</docker.image.prefix>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>confluent</id>
+			<url>http://packages.confluent.io/maven/</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -65,7 +81,21 @@
 		<dependency>
 			<groupId>com.pfernand</groupId>
 			<artifactId>pf-auth-filter</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${pf-auth-filter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>${avro.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.confluent</groupId>
+			<artifactId>kafka-avro-serializer</artifactId>
+			<version>${avro.serializer.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -83,6 +113,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.github.ulisesbocchio</groupId>
+			<artifactId>jasypt-spring-boot-starter</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -93,21 +128,32 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>de.flapdoodle.embed</groupId>
-			<artifactId>de.flapdoodle.embed.mongo</artifactId>
-			<version>2.2.0</version>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.fakemongo</groupId>
-			<artifactId>fongo</artifactId>
-			<version>${fongo.version}</version>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.mashape.unirest</groupId>
 			<artifactId>unirest-java</artifactId>
 			<version>${unirest.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock</artifactId>
+			<version>${wiremock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>${jackson-mapper-asl.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -166,6 +212,7 @@
 					<excludes>
 						<exclude>**/PfAuthServerApplication.*</exclude>
 						<exclude>**/*Configuration.*</exclude>
+						<exclude>com/pfernand/avro/**/*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -325,6 +372,7 @@
 					<effort>Max</effort>
 					<threshold>Low</threshold>
 					<failOnError>true</failOnError>
+					<onlyAnalyze>com.pfernand.pfauthserver.*</onlyAnalyze>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -360,6 +408,44 @@
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.avro</groupId>
+				<artifactId>avro-maven-plugin</artifactId>
+				<version>${avro.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>schema</goal>
+						</goals>
+						<configuration>
+							<sourceDirectory>${project.basedir}/src/main/resources/avro/</sourceDirectory>
+							<outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${build-helper-maven.version}</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>target/generated-sources/avro</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>

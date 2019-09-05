@@ -1,0 +1,90 @@
+info:
+  app:
+    name: pf-auth-server
+    description: Authentication Service
+    version: ${project.parent.version}
+
+management:
+    endpoints:
+      web:
+        base-path:
+        exposure.include: "*"
+      metrics.enabled: true
+      info.enabled: true
+      health.enabled: true
+    metrics:
+      export:
+        cloudwatch:
+          namespace: pf-auth-server-metrics
+          batchSize: 20
+
+kafka.sasl.config:
+  username: ENC(+lOGJfXKpxLrXWDreoAj5AgJaX5uoVynJTmcPcBe/F4=)
+  password: ENC(fB3bFPyS4qLUWE7YERmhKG3L8CFRn8tW2XJ2ol+KOErv94hstelwA2pLS+y/xDl39DLfWXhlw0DNbYqZzS7dMSsWC+/J5mDxB6s3gEsG0Wk=)
+
+spring:
+  data:
+    mongodb:
+      uri: ENC(yFZezm7T4itr1qW1+jVJTHK4QCnPxXgf9fTuCuArdCnjT7kle2gIYeEx0LSef3Q/N7PNV5BJoe9oLObb15IXYkfzqeg13/jrZeSynRydeH+yFQj69V5NR3OBnfExShGsFEjrDAZ6/pen1KxJwrPfVcO9IK8GiaI3)
+      database: pf-auth-db
+      replication:
+        replSetName: rs
+  application:
+    name: auth-service
+  kafka:
+    bootstrap-servers: pkc-epgnk.us-central1.gcp.confluent.cloud:9092
+    properties:
+      specific.avro.reader: true
+      request.timeout.ms: 60000
+      linger.ms: 0
+      security:
+        protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas:
+          config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${kafka.sasl.config.username}" password="${kafka.sasl.config.password}";
+    specific.avro.reader: true
+    ssl:
+      endpoint.identification.algorithm: http
+    producer:
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        basic:
+          auth:
+            credentials:
+              source: USER_INFO
+        schema:
+          registry:
+            url: https://psrc-e8157.us-east-2.aws.confluent.cloud
+            basic.auth.user.info: ENC(7SrjYIBoiJVPHlKnUFClZBs5KYphKfuJDkjdQxc5U+oodtd3y2ezar4eyesZqhi7iDM17EKoZV9eQXA6JL1ojIrlJXvuwAWTtHeTAV5rdxSx3A9+7cYou7iTG/WoDat7)
+      retries: 3
+      acks: 1
+      batch-size: 0
+      ack-timeout-secs: 60
+      buffer-memory: 200
+
+kafka:
+  topicName: pf-auth-dev
+
+server:
+  port: 9100
+
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+
+security:
+  jwt:
+    uri: /auth/**
+    header: Authorization
+    prefix: Bearer
+    expiration: 600
+    secret: ENC(aFZ7qAFK2rEMG1Sh4J+QD31k214W6xws)
+    refresh.expiration: 3600
+
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
