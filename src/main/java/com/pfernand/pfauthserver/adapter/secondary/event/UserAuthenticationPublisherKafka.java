@@ -54,6 +54,7 @@ public class UserAuthenticationPublisherKafka implements UserAuthenticationPubli
         try {
             futureSendResult.get(ackTimeoutInSeconds, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException ex) {
+            Thread.currentThread().interrupt();
             throw new EventSendException();
         }
         log.info(String.format("Event [%s] acknowledged from kafka", userAuthentication.getUniqueId()));

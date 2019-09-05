@@ -85,7 +85,7 @@ public class RefreshTokenApiControllerIT {
                 }
             }
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
                 String address = "mongodb://" + mongoContainer.getContainerIpAddress() + ":" + mongoContainer.getFirstMappedPort() + "/pf-auth-db";
                 System.setProperty("spring.data.mongodb.uri", address);
                 Container.ExecResult lsResult = mongoContainer.execInContainer("/bin/bash", "-c", "mongo --eval 'rs.initiate()'");
