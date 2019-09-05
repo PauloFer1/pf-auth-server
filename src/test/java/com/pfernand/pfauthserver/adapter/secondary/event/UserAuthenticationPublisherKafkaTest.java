@@ -42,7 +42,7 @@ public class UserAuthenticationPublisherKafkaTest {
 
     @Before
     public void setUp() {
-        userAuthenticationPublisherKafka = new UserAuthenticationPublisherKafka(TOPIC_NAME, ACK_TIME, 3, kafkaTemplate);
+        userAuthenticationPublisherKafka = new UserAuthenticationPublisherKafka(TOPIC_NAME, ACK_TIME, kafkaTemplate);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class UserAuthenticationPublisherKafkaTest {
         // Then
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> userAuthenticationPublisherKafka.publishEvent(userAuthDetails))
-                .withMessageContaining("Failed to store");
+                .withMessageContaining("Could not send/acknowledged event from kafka. Will fail to insert user [Rollback].");
     }
 
 }

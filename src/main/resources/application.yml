@@ -18,11 +18,14 @@ management:
           namespace: pf-auth-server-metrics
           batchSize: 20
 
+kafka.sasl.config:
+  username: ENC(+lOGJfXKpxLrXWDreoAj5AgJaX5uoVynJTmcPcBe/F4=)
+  password: ENC(fB3bFPyS4qLUWE7YERmhKG3L8CFRn8tW2XJ2ol+KOErv94hstelwA2pLS+y/xDl39DLfWXhlw0DNbYqZzS7dMSsWC+/J5mDxB6s3gEsG0Wk=)
+
 spring:
   data:
     mongodb:
-#      uri: mongodb://0.0.0.0:27017
-      uri: mongodb+srv://pf-auth-user:cesjid-0fyrMi-wejbeg@pf-auth-db-oosgz.mongodb.net/test?retryWrites=true&w=majority
+      uri: ENC(yFZezm7T4itr1qW1+jVJTHK4QCnPxXgf9fTuCuArdCnjT7kle2gIYeEx0LSef3Q/N7PNV5BJoe9oLObb15IXYkfzqeg13/jrZeSynRydeH+yFQj69V5NR3OBnfExShGsFEjrDAZ6/pen1KxJwrPfVcO9IK8GiaI3)
       database: pf-auth-db
       replication:
         replSetName: rs
@@ -39,12 +42,10 @@ spring:
       sasl:
         mechanism: PLAIN
         jaas:
-          config: org.apache.kafka.common.security.plain.PlainLoginModule required username="PI3YB2NIR57QB6BZ" password="pfqlg+UkPVNOdW2MNkBz0dDJMRLb1r3kV9I4Rx4n2otyskJ+O4RJPgoaNnZxU5d7";
+          config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${kafka.sasl.config.username}" password="${kafka.sasl.config.password}";
     specific.avro.reader: true
     ssl:
       endpoint.identification.algorithm: http
-#      truststore-location: file:/tmp/client.truststore.jks
-#      truststore-password: msc74kuy1hdugrif
     producer:
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -56,8 +57,7 @@ spring:
         schema:
           registry:
             url: https://psrc-e8157.us-east-2.aws.confluent.cloud
-            basic.auth.user.info: ZCXUTNNP73R7X4P4:QOGsfw0HO6ldvks+I56W73bmXVwEJx8YP7nnkpnhJNNnllW0v8lSg3nfV5CWk5Fk
-#        schema.registry.url: http://localhost:8081
+            basic.auth.user.info: ENC(7SrjYIBoiJVPHlKnUFClZBs5KYphKfuJDkjdQxc5U+oodtd3y2ezar4eyesZqhi7iDM17EKoZV9eQXA6JL1ojIrlJXvuwAWTtHeTAV5rdxSx3A9+7cYou7iTG/WoDat7)
       retries: 3
       acks: 1
       batch-size: 0
@@ -81,7 +81,7 @@ security:
     header: Authorization
     prefix: Bearer
     expiration: 600
-    secret: JwtSecretKey
+    secret: ENC(aFZ7qAFK2rEMG1Sh4J+QD31k214W6xws)
     refresh.expiration: 3600
 
 logging:
