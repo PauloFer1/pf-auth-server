@@ -68,7 +68,12 @@ kafka:
   topicName: pf-auth-dev
 
 server:
-  port: 9100
+  port: 8443
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:keystore/keystore.p12
+    key-store-password: ENC(d0zETRsdOySu74tJKstVmuYbnoAZ35am)
+    key-alias: auth
 
 eureka:
   client:
@@ -76,6 +81,7 @@ eureka:
       default-zone: http://localhost:8761/eureka
 
 security:
+  require-ssl: true
   jwt:
     uri: /auth/**
     header: Authorization
@@ -87,4 +93,3 @@ security:
 logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
-
