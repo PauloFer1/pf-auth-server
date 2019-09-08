@@ -73,15 +73,45 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hibernate.validator</groupId>
+					<artifactId>hibernate-validator</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.pfernand</groupId>
 			<artifactId>pf-auth-filter</artifactId>
 			<version>${pf-auth-filter.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.inject</groupId>
+					<artifactId>javax.inject</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-security</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.jsonwebtoken</groupId>
+					<artifactId>jjwt</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
@@ -162,7 +192,7 @@
 		<finalName>pf-auth-server</finalName>
 		<resources>
 			<resource>
-				<filtering>true</filtering>
+				<filtering>false</filtering>
 				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
