@@ -3,6 +3,7 @@ package com.pfernand.pfauthserver.adapter.primary.api;
 import com.pfernand.pfauthserver.core.service.AuthenticationService;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.port.primary.api.AuthenticationApi;
+import com.pfernand.pfauthserver.port.primary.api.dto.UserAuthApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,13 @@ public class AuthenticationApiController implements AuthenticationApi<ResponseEn
 
     @Override
     @PostMapping(value = "/user", produces = "application/json")
-    public ResponseEntity<UserAuthDetails> insertUser(@RequestBody final UserAuthDetails userAuthDetails) {
-        log.info("POST /userAuthDetails with params {}", userAuthDetails);
-        return ResponseEntity.ok(authenticationService.insertUser(userAuthDetails));
+    public ResponseEntity<UserAuthDetails> insertUser(@RequestBody final UserAuthApiDto userAuthApiDto) {
+        log.info("POST /userAuthDetails with params {}", userAuthApiDto);
+        return ResponseEntity.ok(authenticationService.insertUser(UserAuthDetails.builder()
+                .email(userAuthApiDto.getEmail())
+                .password(userAuthApiDto.getPassword())
+                .subject(userAuthApiDto.getSubject())
+                .role(userAuthApiDto.getRole())
+                .build()));
     }
 }

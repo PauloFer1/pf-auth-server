@@ -3,6 +3,7 @@ package com.pfernand.pfauthserver.adapter.primary.api;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.core.service.AuthenticationService;
 import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.port.primary.api.dto.UserAuthApiDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,8 +11,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -22,6 +21,13 @@ public class AuthenticationApiControllerTest {
     private static final String PASSWORD = "pass";
     private static final String ROLE = "admin";
     private static final UserAuthDetails USER_AUTH_DETAILS = UserAuthDetails.builder()
+            .email(EMAIL)
+            .password(PASSWORD)
+            .role(ROLE)
+            .subject(UserAuthSubject.CUSTOMER)
+            .build();
+
+    private static final UserAuthApiDto USER_AUTH_API_DTO = UserAuthApiDto.builder()
             .email(EMAIL)
             .password(PASSWORD)
             .role(ROLE)
@@ -58,7 +64,7 @@ public class AuthenticationApiControllerTest {
         // When
         Mockito.when(authenticationService.insertUser(USER_AUTH_DETAILS))
                 .thenReturn(expectedUserAuthDetails);
-        ResponseEntity<UserAuthDetails> reponseEntity = authenticationApiController.insertUser(USER_AUTH_DETAILS);
+        ResponseEntity<UserAuthDetails> reponseEntity = authenticationApiController.insertUser(USER_AUTH_API_DTO);
 
         // Then
         assertEquals(ResponseEntity.ok(expectedUserAuthDetails), reponseEntity);
