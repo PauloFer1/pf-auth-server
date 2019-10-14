@@ -1,8 +1,8 @@
 package com.pfernand.pfauthserver.adapter.secondary.persistence;
 
 import com.pfernand.pfauthserver.config.DatabaseConfiguration;
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,12 +22,12 @@ public class AuthenticationQueryMongo implements AuthenticationQuery {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public Optional<UserAuthDetails> getUserFromEmail(String email) {
+    public Optional<UserAuthEntity> getUserFromEmail(String email) {
         final Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_CRITERIA).is(email));
         return Optional.ofNullable(mongoTemplate.findOne(
                 query,
-                UserAuthDetails.class,
+                UserAuthEntity.class,
                 DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection())
         );
     }

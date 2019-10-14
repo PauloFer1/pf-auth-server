@@ -2,8 +2,8 @@ package com.pfernand.pfauthserver.adapter.secondary.event;
 
 import com.pfernand.avro.UserAuthentication;
 import com.pfernand.pfauthserver.adapter.secondary.event.exception.EventSendException;
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
+import com.pfernand.pfauthserver.port.secondary.event.dto.UserAuthEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,6 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import java.time.Instant;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -26,9 +25,9 @@ public class UserAuthenticationPublisherKafkaTest {
 
     private static final String TOPIC_NAME = "topic";
     private static final String EMAIL = "paulo@mail.com";
-    private static final String PASSWORD = "pass";
     private static final String ROLE = "role";
     private static final int ACK_TIME = 5;
+    private static final Instant NOW = Instant.now();
 
     @Mock
     private KafkaTemplate<String, UserAuthentication> kafkaTemplate;
@@ -49,11 +48,11 @@ public class UserAuthenticationPublisherKafkaTest {
     @Test
     public void publishEventSendMessage() throws Exception {
         // Given
-        final UserAuthDetails userAuthDetails = UserAuthDetails.builder()
+        final UserAuthEvent userAuthEvent = UserAuthEvent.builder()
                 .email(EMAIL)
-                .password(PASSWORD)
                 .role(ROLE)
                 .subject(UserAuthSubject.CUSTOMER)
+                .createdAt(NOW)
                 .build();
 
         // When
@@ -61,7 +60,7 @@ public class UserAuthenticationPublisherKafkaTest {
                 .thenReturn(futureSendResult);
         Mockito.when(futureSendResult.get(ACK_TIME, TimeUnit.SECONDS))
                 .thenReturn(sendResult);
-        userAuthenticationPublisherKafka.publishEvent(userAuthDetails);
+        userAuthenticationPublisherKafka.publishEvent(userAuthEvent);
 
         // Then
         //Todo, Use Spy to verify UserAuthentication
@@ -71,19 +70,11 @@ public class UserAuthenticationPublisherKafkaTest {
     @Test
     public void publishEventThrowsException() throws Exception {
         // Given
-        final UserAuthDetails userAuthDetails = UserAuthDetails.builder()
+        final UserAuthEvent userAuthEvent = UserAuthEvent.builder()
                 .email(EMAIL)
-                .password(PASSWORD)
                 .role(ROLE)
                 .subject(UserAuthSubject.CUSTOMER)
-                .build();
-
-        final UserAuthentication userAuthentication = UserAuthentication.newBuilder()
-                .setEmail(EMAIL)
-                .setRole(ROLE)
-                .setIndex(1)
-                .setUniqueId(UUID.randomUUID().toString())
-                .setTime(Instant.now().getEpochSecond())
+                .createdAt(NOW)
                 .build();
 
         Mockito.when(kafkaTemplate.send(Mockito.eq(TOPIC_NAME), Mockito.anyString(), Mockito.any(UserAuthentication.class)))
@@ -93,7 +84,7 @@ public class UserAuthenticationPublisherKafkaTest {
 
         // Then
         assertThatExceptionOfType(EventSendException.class)
-                .isThrownBy(() -> userAuthenticationPublisherKafka.publishEvent(userAuthDetails))
+                .isThrownBy(() -> userAuthenticationPublisherKafka.publishEvent(userAuthEvent))
                 .withMessageContaining("Could not send/acknowledged event from kafka. Will fail to insert user [Rollback].");
     }
 

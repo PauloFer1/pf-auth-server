@@ -1,8 +1,8 @@
 package com.pfernand.pfauthserver.adapter.secondary.persistence;
 
 import com.pfernand.pfauthserver.config.DatabaseConfiguration;
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +25,7 @@ public class AuthenticationQueryMongoTest {
     private static final String EMAIL = "paulo@mail.com";
     private static final String PASSWORD = "pass";
     private static final String ROLE = "admin";
-    private static final UserAuthDetails USER_AUTH_DETAILS = UserAuthDetails.builder()
+    private static final UserAuthEntity USER_AUTH_ENTITY = UserAuthEntity.builder()
             .email(EMAIL)
             .password(PASSWORD)
             .role(ROLE)
@@ -49,14 +49,10 @@ public class AuthenticationQueryMongoTest {
     public void getUserFromEmailWhenEmailNotFoundThenReturnEmpty() {
         // Given
         // When
-        Mockito.when(mongoTemplate.findOne(query,
-                UserAuthDetails.class,
-                DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection()))
-                .thenReturn(null);
-        Optional<UserAuthDetails> optionalUserAuthDetails = authenticationQueryMongo.getUserFromEmail(EMAIL);
+        Optional<UserAuthEntity> optionalUserAuthEntity = authenticationQueryMongo.getUserFromEmail(EMAIL);
 
         // Then
-        assertEquals(Optional.empty(), optionalUserAuthDetails);
+        assertEquals(Optional.empty(), optionalUserAuthEntity);
     }
 
     @Test
@@ -64,12 +60,12 @@ public class AuthenticationQueryMongoTest {
         // Given
         // When
         Mockito.when(mongoTemplate.findOne(query,
-                UserAuthDetails.class,
+                UserAuthEntity.class,
                 DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection()))
-                .thenReturn(USER_AUTH_DETAILS);
-        Optional<UserAuthDetails> optionalUserAuthDetails = authenticationQueryMongo.getUserFromEmail(EMAIL);
+                .thenReturn(USER_AUTH_ENTITY);
+        Optional<UserAuthEntity> optionalUserAuthEntity = authenticationQueryMongo.getUserFromEmail(EMAIL);
 
         // Then
-        assertEquals(Optional.of(USER_AUTH_DETAILS), optionalUserAuthDetails);
+        assertEquals(Optional.of(USER_AUTH_ENTITY), optionalUserAuthEntity);
     }
 }

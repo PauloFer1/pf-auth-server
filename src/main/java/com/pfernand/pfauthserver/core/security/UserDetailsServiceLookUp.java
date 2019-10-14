@@ -1,8 +1,8 @@
 package com.pfernand.pfauthserver.core.security;
 
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.core.security.model.UserSecurity;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,12 +25,12 @@ public class UserDetailsServiceLookUp implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Authenticating {}", username);
 
-        final UserAuthDetails userAuthDetails = authenticationQuery.getUserFromEmail(username)
+        final UserAuthEntity userAuthEntity = authenticationQuery.getUserFromEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username: " + username + " not found"));
 
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                .commaSeparatedStringToAuthorityList("ROLE_" + userAuthDetails.getRole());
+                .commaSeparatedStringToAuthorityList("ROLE_" + userAuthEntity.getRole());
 
-        return new UserSecurity(userAuthDetails.getEmail(), userAuthDetails.getPassword(), grantedAuthorities, userAuthDetails.getSubject());
+        return new UserSecurity(userAuthEntity.getEmail(), userAuthEntity.getPassword(), grantedAuthorities, userAuthEntity.getSubject());
     }
 }

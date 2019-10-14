@@ -1,7 +1,7 @@
 package com.pfernand.pfauthserver.port.secondary.event;
 
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.port.secondary.event.dto.UserAuthEvent;
 
 public interface UserAuthenticationPublisher {
-    void publishEvent(UserAuthDetails event);
+    void publishEvent(UserAuthEvent event);
 }

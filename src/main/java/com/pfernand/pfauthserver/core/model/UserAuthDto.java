@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 @Data
 @Builder(builderClassName = "UserBuilder")
 @RequiredArgsConstructor
-@JsonDeserialize(builder = UserAuthDetails.UserBuilder.class)
-public class UserAuthDetails {
+@JsonDeserialize(builder = UserAuthDto.UserBuilder.class)
+public class UserAuthDto {
     private final String email;
     private final String password;
     private final String role;

@@ -1,9 +1,9 @@
 package com.pfernand.pfauthserver.port.primary.api;
 
-import com.pfernand.pfauthserver.port.primary.api.dto.UserAuthApiDto;
+import com.pfernand.pfauthserver.port.primary.api.request.UserAuthApiRequest;
 
 public interface AuthenticationApi<T> {
 
     T retrieveUserFromEmail(final String email);
-    T insertUser(final UserAuthApiDto userAuthApiDto);
+    T insertUser(final UserAuthApiRequest userAuthApiRequest);
 }

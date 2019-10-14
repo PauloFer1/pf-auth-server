@@ -1,10 +1,10 @@
 package com.pfernand.pfauthserver.port.secondary.persistence;
 
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 
 import java.util.Optional;
 
 public interface AuthenticationQuery {
 
-    Optional<UserAuthDetails> getUserFromEmail(final String email);
+    Optional<UserAuthEntity> getUserFromEmail(final String email);
 }

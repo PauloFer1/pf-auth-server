@@ -1,9 +1,9 @@
 package com.pfernand.pfauthserver.core.security;
 
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.core.security.model.UserSecurity;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -53,7 +53,7 @@ public class UserDetailsServiceLookUpTest {
     @Test
     public void loadUserByUsernameWhenValidUsernameReturnsUserSecurity() {
         // Given
-        UserAuthDetails userAuthDetails = UserAuthDetails.builder()
+        UserAuthEntity userAuthEntity = UserAuthEntity.builder()
                 .email(USERNAME)
                 .password(PASSWORD)
                 .subject(SUBJECT)
@@ -63,7 +63,7 @@ public class UserDetailsServiceLookUpTest {
 
         // When
         Mockito.when(authenticationQuery.getUserFromEmail(USERNAME))
-                .thenReturn(Optional.of(userAuthDetails));
+                .thenReturn(Optional.of(userAuthEntity));
         UserDetails userSecurity = userDetailsServiceLookUp.loadUserByUsername(USERNAME);
 
         // Then
