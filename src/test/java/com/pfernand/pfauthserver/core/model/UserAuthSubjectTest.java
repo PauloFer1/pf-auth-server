@@ -1,10 +1,9 @@
 package com.pfernand.pfauthserver.core.model;
 
 import org.junit.Test;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class UserAuthSubjectTest {
 
