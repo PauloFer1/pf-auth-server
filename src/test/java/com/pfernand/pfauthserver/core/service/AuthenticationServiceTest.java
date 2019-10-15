@@ -1,5 +1,6 @@
 package com.pfernand.pfauthserver.core.service;
 
+import com.pfernand.pfauthserver.core.exceptions.ExistentUserEmailException;
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuth;
 import com.pfernand.pfauthserver.core.model.UserAuthDto;
@@ -93,6 +94,27 @@ public class AuthenticationServiceTest {
         // Then
         assertEquals(expectedUserAuth, userAuth);
         Mockito.verify(userAuthenticationPublisher).publishEvent(USER_AUTH_EVENT);
+    }
+
+    @Test
+    public void insertUserWhenEmailAlreadyExistsThrowsException() {
+        // Given
+        final UserAuth expectedUserAuth = UserAuth.builder()
+                .role(USER_AUTH_ENTITY.getRole())
+                .password(USER_AUTH_ENTITY.getPassword())
+                .email(USER_AUTH_ENTITY.getEmail())
+                .subject(UserAuthSubject.CUSTOMER)
+                .createdAt(NOW)
+                .build();
+
+        // When
+        Mockito.when(authenticationQuery.getUserFromEmail(EMAIL))
+                .thenReturn(Optional.of(USER_AUTH_ENTITY));
+
+        // Then
+        assertThatExceptionOfType(ExistentUserEmailException.class)
+                .isThrownBy(() -> authenticationService.insertUser(USER_AUTH_DETAILS))
+                .withMessage(String.format("Cannot create user. Email %s already existent in the system.", USER_AUTH_DETAILS.getEmail()));
     }
 
     @Test

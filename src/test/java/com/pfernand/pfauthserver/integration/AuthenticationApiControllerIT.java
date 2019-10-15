@@ -168,6 +168,28 @@ public class AuthenticationApiControllerIT {
     }
 
     @Test
+    public void insertUserAlreadyExistentReturns500() throws Exception {
+        // Given
+        final String authToken = RestClientManager.getAuthToken(port, ADMIN_USER);
+        kafkaMessageListenerContainer = new KafkaMessageListenerContainer<>(consumerFactory, CONTAINER_PROPERTIES);
+        MessageListener<String, UserAuthentication> messageListener =
+                (ConsumerRecord<String, UserAuthentication> c) -> assertKafkaMessage(c.value(), TEST_USER);
+        kafkaMessageListenerContainer.setupMessageListener(messageListener);
+        kafkaMessageListenerContainer.start();
+        RestClientManager.postJsonExpectingStatus("http://localhost:" + port + "/user", TEST_USER_PARAMS.toString(), authToken, 200);
+
+        // When
+        RestClientManager.postJsonExpectingStatus("http://localhost:" + port + "/user", TEST_USER_PARAMS.toString(), authToken, 500);
+
+
+        // Then
+        UserAuth userAuth = authenticationService.retrieveUserFromEmail(TEST_USER.getEmail());
+        assertThat(userAuth).isEqualToIgnoringGivenFields(TEST_USER, "password", "createdAt");
+        assertThat(userAuth.getPassword()).isNotEmpty();
+        assertThat(userAuth.getCreatedAt()).isBetween(Instant.now().minusSeconds(1), Instant.now());
+    }
+
+    @Test
     public void insertUserWithoutInvalidTokenReturns401() throws Exception {
         // Given
         final String authToken = "Invalid token";

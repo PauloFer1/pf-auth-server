@@ -1,5 +1,6 @@
 package com.pfernand.pfauthserver.core.service;
 
+import com.pfernand.pfauthserver.core.exceptions.ExistentUserEmailException;
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuth;
 import com.pfernand.pfauthserver.core.model.UserAuthDto;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Named;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Optional;
 
 @Slf4j
 @Named
@@ -31,6 +33,7 @@ public class AuthenticationService {
     @Transactional
     public UserAuth insertUser(final UserAuthDto userAuthDto) {
         log.info("Inserting: {}", userAuthDto.getEmail());
+        validateEmailDoesntExist(userAuthDto.getEmail());
         UserAuthEntity userAuthEntity = mapToEntity(userAuthDto);
         final UserAuthEntity savedUserAuthDetails = authenticationCommand.insertUser(userAuthEntity);
         userAuthenticationPublisher.publishEvent(mapToEvent(savedUserAuthDetails));
@@ -42,6 +45,13 @@ public class AuthenticationService {
         final UserAuthEntity userAuthEntity = authenticationQuery.getUserFromEmail(email)
                 .orElseThrow(() -> new UserDetailsNotFoundException(email));
         return mapToModel(userAuthEntity);
+    }
+
+    private void validateEmailDoesntExist(final String email) {
+        final Optional<UserAuthEntity> userAuthEntity = authenticationQuery.getUserFromEmail(email);
+        if (userAuthEntity.isPresent()) {
+            throw new ExistentUserEmailException(email);
+        }
     }
 
     private UserAuthEntity mapToEntity(final UserAuthDto userAuthDto) {
