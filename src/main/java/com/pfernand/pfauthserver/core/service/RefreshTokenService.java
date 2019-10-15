@@ -3,7 +3,6 @@ package com.pfernand.pfauthserver.core.service;
 import com.pfernand.pfauthserver.core.exceptions.RefreshTokenExpiredException;
 import com.pfernand.pfauthserver.core.exceptions.RefreshTokenNotFoundException;
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.core.model.UserAuthProperties;
 import com.pfernand.pfauthserver.core.security.model.AccessTokenSession;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
@@ -11,6 +10,7 @@ import com.pfernand.pfauthserver.port.secondary.persistence.RefreshTokenCommand;
 import com.pfernand.pfauthserver.port.secondary.persistence.RefreshTokenQuery;
 import com.pfernand.pfauthserver.core.security.TokenFactory;
 import com.pfernand.pfauthserver.core.security.model.RefreshTokenSession;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,13 +34,13 @@ public class RefreshTokenService {
         final RefreshTokenSession refreshTokenSession = refreshTokenQuery.getSession(refreshToken)
                 .orElseThrow(() -> new RefreshTokenNotFoundException(refreshToken));
         validateRefreshTokenSession(refreshTokenSession);
-        final UserAuthDetails userAuthDetails = authenticationQuery.getUserFromEmail(refreshTokenSession.getUserUuid())
+        final UserAuthEntity userAuthEntity = authenticationQuery.getUserFromEmail(refreshTokenSession.getUserUuid())
                 .orElseThrow(() -> new UserDetailsNotFoundException(refreshTokenSession.getUserUuid()));
 
         final AccessTokenSession accessTokenSession = tokenFactory.createAccessToken(
-                userAuthDetails.getEmail(),
-                Collections.singletonList(userAuthDetails.getRole()),
-                userAuthDetails.getSubject().getSubject()
+                userAuthEntity.getEmail(),
+                Collections.singletonList(userAuthEntity.getRole()),
+                userAuthEntity.getSubject().getSubject()
         );
 
         refreshTokenCommand.saveSession(refreshTokenSession);

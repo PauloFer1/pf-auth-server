@@ -3,7 +3,6 @@ package com.pfernand.pfauthserver.core.service;
 import com.pfernand.pfauthserver.core.exceptions.RefreshTokenExpiredException;
 import com.pfernand.pfauthserver.core.exceptions.RefreshTokenNotFoundException;
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
 import com.pfernand.pfauthserver.core.model.UserAuthProperties;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.core.security.TokenFactory;
@@ -12,6 +11,7 @@ import com.pfernand.pfauthserver.core.security.model.RefreshTokenSession;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
 import com.pfernand.pfauthserver.port.secondary.persistence.RefreshTokenCommand;
 import com.pfernand.pfauthserver.port.secondary.persistence.RefreshTokenQuery;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -111,7 +111,7 @@ public class RefreshTokenServiceTest {
                 .expirationDate(Instant.now().plusSeconds(60))
                 .userUuid("UUID")
                 .build();
-        final UserAuthDetails userAuthDetails = UserAuthDetails.builder()
+        final UserAuthEntity userAuthEntity = UserAuthEntity.builder()
                 .role("role")
                 .password("password")
                 .email("email")
@@ -128,10 +128,10 @@ public class RefreshTokenServiceTest {
         Mockito.when(refreshTokenQuery.getSession(refreshToken))
                 .thenReturn(Optional.of(refreshTokenSession));
         Mockito.when(authenticationQuery.getUserFromEmail(refreshTokenSession.getUserUuid()))
-                .thenReturn(Optional.of(userAuthDetails));
-        Mockito.when(tokenFactory.createAccessToken(userAuthDetails.getEmail(),
-                Collections.singletonList(userAuthDetails.getRole()),
-                userAuthDetails.getSubject().getSubject()))
+                .thenReturn(Optional.of(userAuthEntity));
+        Mockito.when(tokenFactory.createAccessToken(userAuthEntity.getEmail(),
+                Collections.singletonList(userAuthEntity.getRole()),
+                userAuthEntity.getSubject().getSubject()))
                 .thenReturn(accessTokenSession);
         Mockito.when(refreshTokenCommand.saveSession(refreshTokenSession))
                 .thenReturn(refreshTokenSession);

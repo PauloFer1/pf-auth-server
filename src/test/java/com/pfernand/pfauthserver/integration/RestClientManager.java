@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.core.model.UserAuthDto;
 import com.pfernand.pfauthserver.core.model.UserAuthProperties;
 import org.json.JSONObject;
 
@@ -16,11 +16,11 @@ public class RestClientManager {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    static String getAuthToken(int port, UserAuthDetails adminUser) throws Exception {
+    static String getAuthToken(int port, UserAuthDto adminUser) throws Exception {
         return getUserAuthProperties(port, adminUser).getAccessToken();
     }
 
-    static String getRefreshToken(int port, UserAuthDetails adminUser) throws Exception {
+    static String getRefreshToken(int port, UserAuthDto adminUser) throws Exception {
         return getUserAuthProperties(port, adminUser).getRefreshToken();
     }
 
@@ -45,7 +45,7 @@ public class RestClientManager {
                 .asJson();
     }
 
-    private static UserAuthProperties getUserAuthProperties(int port, UserAuthDetails adminUser) throws Exception {
+    private static UserAuthProperties getUserAuthProperties(int port, UserAuthDto adminUser) throws Exception {
         ObjectNode parameters = JsonNodeFactory.instance.objectNode();
         parameters
                 .put("username", adminUser.getEmail())

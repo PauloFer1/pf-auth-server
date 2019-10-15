@@ -1,11 +1,14 @@
 package com.pfernand.pfauthserver.core.service;
 
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.core.model.UserAuth;
+import com.pfernand.pfauthserver.core.model.UserAuthDto;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.port.secondary.event.UserAuthenticationPublisher;
+import com.pfernand.pfauthserver.port.secondary.event.dto.UserAuthEvent;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationCommand;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -14,6 +17,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -25,11 +30,26 @@ public class AuthenticationServiceTest {
     private static final String EMAIL = "test@mail.com";
     private static final String PASSWORD = "pass";
     private static final String ROLE = "admin";
-    private static final UserAuthDetails USER_AUTH_DETAILS = UserAuthDetails.builder()
+    private static final String ENCODED_PASSWORD = "encoded";
+    private static final Instant NOW = Instant.now();
+    private static final UserAuthDto USER_AUTH_DETAILS = UserAuthDto.builder()
             .email(EMAIL)
             .password(PASSWORD)
             .role(ROLE)
             .subject(UserAuthSubject.CUSTOMER)
+            .build();
+    private static final UserAuthEntity USER_AUTH_ENTITY = UserAuthEntity.builder()
+            .email(EMAIL)
+            .password(ENCODED_PASSWORD)
+            .role(ROLE)
+            .subject(UserAuthSubject.CUSTOMER)
+            .createdAt(NOW)
+            .build();
+    private static final UserAuthEvent USER_AUTH_EVENT = UserAuthEvent.builder()
+            .email(EMAIL)
+            .role(ROLE)
+            .subject(UserAuthSubject.CUSTOMER)
+            .createdAt(USER_AUTH_ENTITY.getCreatedAt())
             .build();
 
     @Mock
@@ -44,36 +64,35 @@ public class AuthenticationServiceTest {
     @Mock
     private UserAuthenticationPublisher userAuthenticationPublisher;
 
+    @Mock
+    private Clock clock;
+
     @InjectMocks
     private AuthenticationService authenticationService;
 
     @Test
     public void insertUserWhenValidValuesThenReturnUser() {
         // Given
-        final String encodedPassword = "encoded";
-        final UserAuthDetails userAuthDetailsAfterEncoded = UserAuthDetails.builder()
-                .role(USER_AUTH_DETAILS.getRole())
-                .password(encodedPassword)
-                .email(USER_AUTH_DETAILS.getEmail())
+        final UserAuth expectedUserAuth = UserAuth.builder()
+                .role(USER_AUTH_ENTITY.getRole())
+                .password(USER_AUTH_ENTITY.getPassword())
+                .email(USER_AUTH_ENTITY.getEmail())
                 .subject(UserAuthSubject.CUSTOMER)
-                .build();
-        final UserAuthDetails expectedUserAuthDetails = UserAuthDetails.builder()
-                .role(USER_AUTH_DETAILS.getRole())
-                .password(USER_AUTH_DETAILS.getPassword())
-                .email(USER_AUTH_DETAILS.getEmail())
-                .subject(UserAuthSubject.CUSTOMER)
+                .createdAt(NOW)
                 .build();
 
         // When
-        Mockito.when(bCryptPasswordEncoder.encode(USER_AUTH_DETAILS.getPassword()))
-                .thenReturn(encodedPassword);
-        Mockito.when(authenticationCommand.insertUser(userAuthDetailsAfterEncoded))
-                .thenReturn(expectedUserAuthDetails);
-        UserAuthDetails userAuthDetails = authenticationService.insertUser(USER_AUTH_DETAILS);
+        Mockito.when(clock.instant())
+                .thenReturn(NOW);
+        Mockito.when(bCryptPasswordEncoder.encode(PASSWORD))
+                .thenReturn(ENCODED_PASSWORD);
+        Mockito.when(authenticationCommand.insertUser(USER_AUTH_ENTITY))
+                .thenReturn(USER_AUTH_ENTITY);
+        UserAuth userAuth = authenticationService.insertUser(USER_AUTH_DETAILS);
 
         // Then
-        assertEquals(expectedUserAuthDetails, userAuthDetails);
-        Mockito.verify(userAuthenticationPublisher).publishEvent(expectedUserAuthDetails);
+        assertEquals(expectedUserAuth, userAuth);
+        Mockito.verify(userAuthenticationPublisher).publishEvent(USER_AUTH_EVENT);
     }
 
     @Test
@@ -93,13 +112,20 @@ public class AuthenticationServiceTest {
     @Test
     public void retrieveUserFromEmailWhenValidEmailThenReturnUser() {
         // Given
+        final UserAuth expectedUserAuth = UserAuth.builder()
+                .role(USER_AUTH_ENTITY.getRole())
+                .password(USER_AUTH_ENTITY.getPassword())
+                .email(USER_AUTH_ENTITY.getEmail())
+                .subject(UserAuthSubject.CUSTOMER)
+                .createdAt(NOW)
+                .build();
         // When
         Mockito.when(authenticationQuery.getUserFromEmail(EMAIL))
-                .thenReturn(Optional.of(USER_AUTH_DETAILS));
-        UserAuthDetails userAuthDetails = authenticationService.retrieveUserFromEmail(EMAIL);
+                .thenReturn(Optional.of(USER_AUTH_ENTITY));
+        UserAuth userAuth = authenticationService.retrieveUserFromEmail(EMAIL);
 
         // Then
-        assertEquals(USER_AUTH_DETAILS, userAuthDetails);
+        assertEquals(expectedUserAuth, userAuth);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.pfernand.pfauthserver.port.secondary.persistence;
 
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 
 public interface AuthenticationCommand {
-    UserAuthDetails insertUser(final UserAuthDetails userAuthDetails);
+    UserAuthEntity insertUser(final UserAuthEntity userAuthEntity);
 }

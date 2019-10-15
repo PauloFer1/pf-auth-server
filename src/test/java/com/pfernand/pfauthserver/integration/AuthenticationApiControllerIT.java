@@ -7,7 +7,8 @@ import com.mashape.unirest.http.JsonNode;
 import com.pfernand.avro.UserAuthentication;
 import com.pfernand.pfauthserver.PfAuthServerApplication;
 import com.pfernand.pfauthserver.config.DatabaseConfiguration;
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.core.model.UserAuth;
+import com.pfernand.pfauthserver.core.model.UserAuthDto;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.core.service.AuthenticationService;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -51,13 +52,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AuthenticationApiControllerIT {
 
     private static final String TOPIC_NAME = "poc";
-    private static final UserAuthDetails ADMIN_USER = UserAuthDetails.builder()
+    private static final UserAuthDto ADMIN_USER = UserAuthDto.builder()
             .email("admin@email.com")
             .password("pass")
             .role("admin")
             .subject(UserAuthSubject.EMPLOYEE)
             .build();
-    private static final UserAuthDetails TEST_USER = UserAuthDetails.builder()
+    private static final UserAuth TEST_USER = UserAuth.builder()
             .email("paulo@email.com")
             .password("pass")
             .role("admin")
@@ -160,9 +161,10 @@ public class AuthenticationApiControllerIT {
 
 
         // Then
-        UserAuthDetails userAuthDetails = authenticationService.retrieveUserFromEmail(TEST_USER.getEmail());
-        assertThat(userAuthDetails).isEqualToIgnoringGivenFields(TEST_USER, "password");
-        assertThat(userAuthDetails.getPassword()).isNotEmpty();
+        UserAuth userAuth = authenticationService.retrieveUserFromEmail(TEST_USER.getEmail());
+        assertThat(userAuth).isEqualToIgnoringGivenFields(TEST_USER, "password", "createdAt");
+        assertThat(userAuth.getPassword()).isNotEmpty();
+        assertThat(userAuth.getCreatedAt()).isBetween(Instant.now().minusSeconds(1), Instant.now());
     }
 
     @Test
@@ -176,10 +178,10 @@ public class AuthenticationApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(401);
     }
 
-    private void assertKafkaMessage(final UserAuthentication userAuthentication, final UserAuthDetails userAuthDetails) {
+    private void assertKafkaMessage(final UserAuthentication userAuthentication, final UserAuth userAuth) {
         log.info("ASSERT KAFKA EVENT");
         log.info(userAuthentication.toString());
-        assertThat(userAuthentication.getEmail().toString()).isEqualTo(userAuthDetails.getEmail());
-        assertThat(userAuthentication.getRole().toString()).isEqualTo(userAuthDetails.getRole());
+        assertThat(userAuthentication.getEmail().toString()).isEqualTo(userAuth.getEmail());
+        assertThat(userAuthentication.getRole().toString()).isEqualTo(userAuth.getRole());
     }
 }

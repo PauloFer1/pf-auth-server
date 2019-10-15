@@ -5,7 +5,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.pfernand.avro.UserAuthentication;
 import com.pfernand.pfauthserver.PfAuthServerApplication;
 import com.pfernand.pfauthserver.config.DatabaseConfiguration;
-import com.pfernand.pfauthserver.core.model.UserAuthDetails;
+import com.pfernand.pfauthserver.core.model.UserAuthDto;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.core.service.AuthenticationService;
 import com.pfernand.pfauthserver.util.MockSerdeConfig;
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RefreshTokenApiControllerIT {
 
     private static final String TOPIC_NAME = "poc";
-    private static final UserAuthDetails ADMIN_USER = UserAuthDetails.builder()
+    private static final UserAuthDto ADMIN_USER = UserAuthDto.builder()
             .email("admin@email.com")
             .password("pass")
             .role("admin")

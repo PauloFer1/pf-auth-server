@@ -62,7 +62,7 @@ spring:
       acks: 1
       batch-size: 0
       ack-timeout-secs: 60
-      buffer-memory: 200
+      buffer-memory: 512
 
 kafka:
   topicName: pf-auth-dev

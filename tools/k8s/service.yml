@@ -4,9 +4,9 @@ metadata:
   name: pf-auth-server
 spec:
   ports:
-    - name: http
+    - name: https
       port: 80
-      targetPort: 8080
+      targetPort: 8443
   selector:
     app: pf-auth-server
   type: LoadBalancer

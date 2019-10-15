@@ -19,6 +19,6 @@ spec:
               value: "us-east-1"
             - name:
           ports:
-            - containerPort: 8080
+            - containerPort: 8443
       imagePullSecrets:
         - name: regcred
