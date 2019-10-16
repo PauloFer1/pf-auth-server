@@ -2,6 +2,7 @@ package com.pfernand.pfauthserver.port.primary.api.request;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.pfernand.pfauthserver.core.model.UserAuthRole;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class UserAuthApiRequest {
     private final String email;
     private final String password;
-    private final String role;
+    private final UserAuthRole role;
     private final UserAuthSubject subject;
 
     @JsonPOJOBuilder(withPrefix = "")

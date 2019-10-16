@@ -1,7 +1,9 @@
 package com.pfernand.pfauthserver.adapter.primary.api;
 
+import com.pfernand.pfauthserver.adapter.primary.api.validation.InputApiValidation;
 import com.pfernand.pfauthserver.core.model.UserAuth;
 import com.pfernand.pfauthserver.core.model.UserAuthDto;
+import com.pfernand.pfauthserver.core.model.UserAuthRole;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.core.service.AuthenticationService;
 import com.pfernand.pfauthserver.port.primary.api.request.UserAuthApiRequest;
@@ -44,15 +46,18 @@ public class AuthenticationApiControllerTest {
             .subject(UserAuthSubject.CUSTOMER)
             .createdAt(NOW)
             .build();
-    private static final UserAuthApiRequest USER_AUTH_API_DTO = UserAuthApiRequest.builder()
+    private static final UserAuthApiRequest USER_AUTH_API_REQUEST = UserAuthApiRequest.builder()
             .email(EMAIL)
             .password(PASSWORD)
-            .role(ROLE)
+            .role(UserAuthRole.ADMIN)
             .subject(UserAuthSubject.CUSTOMER)
             .build();
 
     @Mock
     private AuthenticationService authenticationService;
+
+    @Mock
+    private InputApiValidation inputApiValidation;
 
     @InjectMocks
     private AuthenticationApiController authenticationApiController;
@@ -66,6 +71,8 @@ public class AuthenticationApiControllerTest {
         ResponseEntity<UserAuthApiResponse> responseEntity = authenticationApiController.retrieveUserFromEmail(EMAIL);
 
         // Then
+        Mockito.verify(inputApiValidation).validateLength(EMAIL);
+        Mockito.verify(inputApiValidation).encodeForLog(EMAIL);
         assertEquals(ResponseEntity.ok(USER_AUTH_API_RESPONSE), responseEntity);
     }
 
@@ -81,9 +88,11 @@ public class AuthenticationApiControllerTest {
         // When
         Mockito.when(authenticationService.insertUser(USER_AUTH_DETAILS))
                 .thenReturn(USER_AUTH);
-        ResponseEntity<UserAuthApiResponse> reponseEntity = authenticationApiController.insertUser(USER_AUTH_API_DTO);
+        ResponseEntity<UserAuthApiResponse> reponseEntity = authenticationApiController.insertUser(USER_AUTH_API_REQUEST);
 
         // Then
+        Mockito.verify(inputApiValidation).validateUserAuth(USER_AUTH_API_REQUEST);
+        Mockito.verify(inputApiValidation).encodeForLog(USER_AUTH_API_REQUEST.getEmail());
         assertEquals(ResponseEntity.ok(expectedUserAuthApiResponse), reponseEntity);
     }
 }
