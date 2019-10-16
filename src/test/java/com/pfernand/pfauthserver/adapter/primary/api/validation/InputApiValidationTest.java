@@ -3,7 +3,6 @@ package com.pfernand.pfauthserver.adapter.primary.api.validation;
 import com.pfernand.pfauthserver.core.model.UserAuthRole;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
 import com.pfernand.pfauthserver.port.primary.api.request.UserAuthApiRequest;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
