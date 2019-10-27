@@ -1,6 +1,7 @@
 package com.pfernand.pfauthserver.adapter.primary.api;
 
 import com.pfernand.pfauthserver.adapter.primary.api.mapper.AuthenticationResponseMapper;
+import com.pfernand.pfauthserver.adapter.primary.api.validation.InputApiValidation;
 import com.pfernand.pfauthserver.core.exceptions.RefreshTokenNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuthProperties;
 import com.pfernand.pfauthserver.core.security.model.AuthenticationResponse;
@@ -28,6 +29,9 @@ public class RefreshTokenApiControllerTest {
 
     @Mock
     private AuthenticationResponseMapper authenticationResponseMapper;
+
+    @Mock
+    private InputApiValidation inputApiValidation;
 
     @InjectMocks
     private RefreshTokenApiController refreshTokenApiController;
@@ -58,6 +62,8 @@ public class RefreshTokenApiControllerTest {
         ResponseEntity<AuthenticationResponse> response = refreshTokenApiController.refresh(refreshToken);
 
         // Then
+        Mockito.verify(inputApiValidation).validateLength(refreshToken);
+        Mockito.verify(inputApiValidation).encodeForLog(refreshToken);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(authenticationResponse, response.getBody());
     }

@@ -1,10 +1,12 @@
 package com.pfernand.pfauthserver.core.service;
 
 import com.pfernand.pfauthserver.core.exceptions.ExistentUserEmailException;
+import com.pfernand.pfauthserver.core.exceptions.InvalidEmailException;
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuth;
 import com.pfernand.pfauthserver.core.model.UserAuthDto;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
+import com.pfernand.pfauthserver.core.validation.UserAuthValidation;
 import com.pfernand.pfauthserver.port.secondary.event.UserAuthenticationPublisher;
 import com.pfernand.pfauthserver.port.secondary.event.dto.UserAuthEvent;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationCommand;
@@ -22,6 +24,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.in;
 import static org.junit.Assert.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -33,7 +36,7 @@ public class AuthenticationServiceTest {
     private static final String ROLE = "admin";
     private static final String ENCODED_PASSWORD = "encoded";
     private static final Instant NOW = Instant.now();
-    private static final UserAuthDto USER_AUTH_DETAILS = UserAuthDto.builder()
+    private static final UserAuthDto USER_AUTH_DTO = UserAuthDto.builder()
             .email(EMAIL)
             .password(PASSWORD)
             .role(ROLE)
@@ -66,6 +69,9 @@ public class AuthenticationServiceTest {
     private UserAuthenticationPublisher userAuthenticationPublisher;
 
     @Mock
+    private UserAuthValidation userAuthValidation;
+
+    @Mock
     private Clock clock;
 
     @InjectMocks
@@ -89,32 +95,43 @@ public class AuthenticationServiceTest {
                 .thenReturn(ENCODED_PASSWORD);
         Mockito.when(authenticationCommand.insertUser(USER_AUTH_ENTITY))
                 .thenReturn(USER_AUTH_ENTITY);
-        UserAuth userAuth = authenticationService.insertUser(USER_AUTH_DETAILS);
+        UserAuth userAuth = authenticationService.insertUser(USER_AUTH_DTO);
 
         // Then
         assertEquals(expectedUserAuth, userAuth);
         Mockito.verify(userAuthenticationPublisher).publishEvent(USER_AUTH_EVENT);
+        Mockito.verify(userAuthValidation).validate(USER_AUTH_DTO);
+    }
+
+    @Test
+    public void insertUserWhenInvalidEmailThrowsException() {
+        // Given
+        final UserAuthDto invalid = UserAuthDto.builder()
+                .email("paulo@mail.c")
+                .password(PASSWORD)
+                .role(ROLE)
+                .subject(UserAuthSubject.CUSTOMER)
+                .build();
+        // When
+        Mockito.doThrow(new InvalidEmailException(invalid.getEmail()))
+                .when(userAuthValidation).validate(invalid);
+        // Then
+        assertThatExceptionOfType(InvalidEmailException.class)
+                .isThrownBy(() -> authenticationService.insertUser(invalid))
+                .withMessage(String.format("Invalid email: %s", invalid.getEmail()));
     }
 
     @Test
     public void insertUserWhenEmailAlreadyExistsThrowsException() {
         // Given
-        final UserAuth expectedUserAuth = UserAuth.builder()
-                .role(USER_AUTH_ENTITY.getRole())
-                .password(USER_AUTH_ENTITY.getPassword())
-                .email(USER_AUTH_ENTITY.getEmail())
-                .subject(UserAuthSubject.CUSTOMER)
-                .createdAt(NOW)
-                .build();
-
         // When
         Mockito.when(authenticationQuery.getUserFromEmail(EMAIL))
                 .thenReturn(Optional.of(USER_AUTH_ENTITY));
 
         // Then
         assertThatExceptionOfType(ExistentUserEmailException.class)
-                .isThrownBy(() -> authenticationService.insertUser(USER_AUTH_DETAILS))
-                .withMessage(String.format("Cannot create user. Email %s already existent in the system.", USER_AUTH_DETAILS.getEmail()));
+                .isThrownBy(() -> authenticationService.insertUser(USER_AUTH_DTO))
+                .withMessage(String.format("Cannot create user. Email %s already existent in the system.", USER_AUTH_DTO.getEmail()));
     }
 
     @Test

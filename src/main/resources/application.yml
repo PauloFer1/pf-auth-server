@@ -93,3 +93,8 @@ security:
 logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+org:
+  owasp:
+    esapi:
+      resources: classpath:ESAPI.properties

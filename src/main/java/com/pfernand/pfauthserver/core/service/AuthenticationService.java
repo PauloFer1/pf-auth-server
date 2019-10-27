@@ -4,6 +4,7 @@ import com.pfernand.pfauthserver.core.exceptions.ExistentUserEmailException;
 import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuth;
 import com.pfernand.pfauthserver.core.model.UserAuthDto;
+import com.pfernand.pfauthserver.core.validation.UserAuthValidation;
 import com.pfernand.pfauthserver.port.secondary.event.UserAuthenticationPublisher;
 import com.pfernand.pfauthserver.port.secondary.event.dto.UserAuthEvent;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationCommand;
@@ -28,11 +29,13 @@ public class AuthenticationService {
     private final AuthenticationCommand authenticationCommand;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserAuthenticationPublisher userAuthenticationPublisher;
+    private final UserAuthValidation userAuthValidation;
     private final Clock clock;
 
     @Transactional
     public UserAuth insertUser(final UserAuthDto userAuthDto) {
-        log.info("Inserting: {}", userAuthDto.getEmail());
+        userAuthValidation.validate(userAuthDto);
+        log.debug("Inserting: {}", userAuthDto.getEmail());
         validateEmailDoesntExist(userAuthDto.getEmail());
         UserAuthEntity userAuthEntity = mapToEntity(userAuthDto);
         final UserAuthEntity savedUserAuthDetails = authenticationCommand.insertUser(userAuthEntity);
@@ -41,7 +44,7 @@ public class AuthenticationService {
     }
 
     public UserAuth retrieveUserFromEmail(final String email) {
-        log.info("Retrieving info for: {}", email);
+        log.debug("Retrieving info for: {}", email);
         final UserAuthEntity userAuthEntity = authenticationQuery.getUserFromEmail(email)
                 .orElseThrow(() -> new UserDetailsNotFoundException(email));
         return mapToModel(userAuthEntity);
