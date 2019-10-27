@@ -9,6 +9,7 @@ import com.pfernand.pfauthserver.port.primary.api.request.UserAuthApiRequest;
 import com.pfernand.pfauthserver.port.primary.api.response.UserAuthApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ public class AuthenticationApiController implements AuthenticationApi<ResponseEn
     private final InputApiValidation inputApiValidation;
 
     @Override
-    @GetMapping(value = "/user/{email}", produces = "application/json")
+    @GetMapping(value = "/user/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserAuthApiResponse> retrieveUserFromEmail(@PathVariable final String email) {
         inputApiValidation.validateLength(email);
         log.info("GET /user with params {}", inputApiValidation.encodeForLog(email));
@@ -35,7 +36,7 @@ public class AuthenticationApiController implements AuthenticationApi<ResponseEn
 
     @Override
     @Secured("ROLE_admin")
-    @PostMapping(value = "/user", produces = "application/json")
+    @PostMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserAuthApiResponse> insertUser(@RequestBody final UserAuthApiRequest userAuthApiRequest) {
         inputApiValidation.validateUserAuth(userAuthApiRequest);
         log.info("POST /userAuthDetails with email {}, role {}, subject {}",
