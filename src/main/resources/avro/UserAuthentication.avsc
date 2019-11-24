@@ -2,12 +2,14 @@
     "type": "record",
     "namespace": "com.pfernand.avro",
     "name": "UserAuthentication",
-    "version": 1,
+    "version": 2,
     "fields": [
         {"name": "time", "type": "long", "doc": "Time of message generation"},
         {"name": "email", "type": "string", "doc": "Email of the user"},
         {"name": "role", "type": "string", "doc": "Auth role of the user"},
         {"name": "uniqueId", "type": "string", "doc": "Unique Message id"},
-        {"name": "index", "type": "int", "default": 0, "doc" : "Message index"}
+        {"name": "index", "type": "int", "default": 0, "doc" : "Message index"},
+        {"name": "userUuid", "type": "string", "doc": "User UUID", "default" : ""},
+        {"name": "authToken", "type": "string", "doc": "Token for first auth", "default" : ""}
     ]
 }

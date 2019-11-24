@@ -4,10 +4,12 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @Builder
 public class UserAuth {
+    private final UUID userUuid;
     private final String email;
     private final String password;
     private final String role;

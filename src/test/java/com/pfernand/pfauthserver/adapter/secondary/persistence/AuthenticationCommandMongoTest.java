@@ -10,6 +10,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -44,6 +49,27 @@ public class AuthenticationCommandMongoTest {
         Mockito.verify(mongoTemplate, Mockito.times(1))
                 .insert(USER_AUTH_ENTITY, DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection());
         assertEquals(USER_AUTH_ENTITY, userAuthEntity);
+    }
+
+    @Test
+    public void activateUserShouldCallMongoTemplate() {
+        // Given
+        final UUID userUuid = UUID.randomUUID();
+        final Query query = new Query();
+        query.addCriteria(Criteria.where("userUuid").is(userUuid));
+        final Update update = new Update().set("active", true);
+
+        // When
+        Mockito.when(mongoTemplate.findAndModify(
+                query,
+                update,
+                UserAuthEntity.class,
+                DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection()))
+                .thenReturn(USER_AUTH_ENTITY);
+        UserAuthEntity result = authenticationCommandMongo.activateUser(userUuid);
+
+        // Then
+        assertEquals(USER_AUTH_ENTITY, result);
     }
 
 }

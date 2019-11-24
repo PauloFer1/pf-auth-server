@@ -129,6 +129,7 @@ public class AuthenticationApiControllerIT {
     public void setUp() throws Exception {
         mongoTemplate.createCollection("user");
         mongoTemplate.createCollection("refresh-token");
+        mongoTemplate.createCollection("reg_token");
 
         schemaRegistryClient.register(TOPIC_NAME + "-value", UserAuthentication.SCHEMA$);
 
@@ -142,6 +143,7 @@ public class AuthenticationApiControllerIT {
         mongoTemplate.remove(query, DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection());
         mongoTemplate.dropCollection("user");
         mongoTemplate.dropCollection("refresh-token");
+        mongoTemplate.dropCollection("reg_token");
         if (kafkaMessageListenerContainer != null && kafkaMessageListenerContainer.isRunning()) {
             kafkaMessageListenerContainer.stop();
         }
@@ -162,8 +164,9 @@ public class AuthenticationApiControllerIT {
 
         // Then
         UserAuth userAuth = authenticationService.retrieveUserFromEmail(TEST_USER.getEmail());
-        assertThat(userAuth).isEqualToIgnoringGivenFields(TEST_USER, "password", "createdAt");
+        assertThat(userAuth).isEqualToIgnoringGivenFields(TEST_USER, "password", "createdAt", "userUuid");
         assertThat(userAuth.getPassword()).isNotEmpty();
+        assertThat(userAuth.getUserUuid().toString()).isNotEmpty();
         assertThat(userAuth.getCreatedAt()).isBetween(Instant.now().minusSeconds(1), Instant.now());
     }
 
@@ -184,8 +187,9 @@ public class AuthenticationApiControllerIT {
 
         // Then
         UserAuth userAuth = authenticationService.retrieveUserFromEmail(TEST_USER.getEmail());
-        assertThat(userAuth).isEqualToIgnoringGivenFields(TEST_USER, "password", "createdAt");
+        assertThat(userAuth).isEqualToIgnoringGivenFields(TEST_USER, "password", "createdAt", "userUuid");
         assertThat(userAuth.getPassword()).isNotEmpty();
+        assertThat(userAuth.getUserUuid().toString()).isNotEmpty();
         assertThat(userAuth.getCreatedAt()).isBetween(Instant.now().minusSeconds(1), Instant.now());
     }
 

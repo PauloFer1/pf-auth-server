@@ -38,11 +38,13 @@ public class UserAuthenticationPublisherKafka implements UserAuthenticationPubli
     @Override
     public void publishEvent(UserAuthEvent event) {
         final UserAuthentication userAuthentication = UserAuthentication.newBuilder()
+                .setUserUuid(event.getUserUuid())
                 .setEmail(event.getEmail())
                 .setRole(event.getRole())
                 .setIndex(indexCounter.getAndIncrement())
                 .setUniqueId(UUID.randomUUID().toString())
                 .setTime(event.getCreatedAt().toEpochMilli())
+                .setAuthToken(event.getAuthToken())
                 .build();
         log.info(String.format("Sending event: %s", userAuthentication.getUniqueId()));
         sendEventToKafka(userAuthentication);
