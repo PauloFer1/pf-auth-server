@@ -53,6 +53,7 @@ public class UserAuthenticationPublisherKafka implements UserAuthenticationPubli
     private void sendEventToKafka(final UserAuthentication userAuthentication) {
         ListenableFuture<SendResult<String, UserAuthentication>> futureSendResult = kafkaTemplate.send(topicName, UUID.randomUUID().toString(), userAuthentication);
         try {
+            // Todo - Add callback
             futureSendResult.get(ackTimeoutInSeconds, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException ex) {
             Thread.currentThread().interrupt();

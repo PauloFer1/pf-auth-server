@@ -14,9 +14,16 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.transaction.ChainedTransactionManager;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 import java.util.Arrays;
 
+@EnableRetry
 @Configuration
 public class DatabaseConfiguration
 {
@@ -61,5 +68,21 @@ public class DatabaseConfiguration
         mongoConverter.setCustomConversions(customConversions);
         mongoConverter.afterPropertiesSet();
         return mongoConverter;
+    }
+
+    @Bean
+    public KafkaTransactionManager kafkaTransactionManager(ProducerFactory producerFactory) {
+//        producerFactory.setTransactionIdPrefix("transaction.prefix.");
+        KafkaTransactionManager kafkaTransactionManager = new KafkaTransactionManager(producerFactory);;
+        kafkaTransactionManager.setTransactionSynchronization(AbstractPlatformTransactionManager.SYNCHRONIZATION_ON_ACTUAL_TRANSACTION);
+        kafkaTransactionManager.setRollbackOnCommitFailure(true);
+        return kafkaTransactionManager;
+    }
+
+
+    @Bean(name = "chainedTransactionManager")
+    public ChainedTransactionManager chainedTransactionManager(MongoTransactionManager mongoTransactionManager,
+                                                               KafkaTransactionManager kafkaTransactionManager) {
+        return new ChainedTransactionManager(kafkaTransactionManager, mongoTransactionManager);
     }
 }

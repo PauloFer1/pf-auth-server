@@ -15,11 +15,17 @@ import com.pfernand.pfauthserver.port.secondary.persistence.entity.RegistrationT
 import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.RetryPolicy;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.inject.Named;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -39,16 +45,54 @@ public class AuthenticationService {
     private final TokenFactory tokenFactory;
     private final Clock clock;
 
-    @Transactional
+    @Retryable(include = {IllegalStateException.class}, exceptionExpression = "#{message.contains('no can do')}")
+    @Transactional("chainedTransactionManager")
     public UserAuth insertUser(final UserAuthDto userAuthDto) {
+        log.info("++++++++++++++++++++++++++++++++++++");
         userAuthValidation.validate(userAuthDto);
         log.debug("Inserting: {}", userAuthDto.getEmail());
         validateEmailDoesntExist(userAuthDto.getEmail());
         UserAuthEntity userAuthEntity = mapToEntity(userAuthDto);
         final UserAuthEntity savedUserAuthDetails = authenticationCommand.insertUser(userAuthEntity);
         final RegistrationTokenEntity registrationTokenEntity = createRegistrationToken(savedUserAuthDetails.getUserUuid());
+        if (userAuthDto.getEmail().contains("p"))
+        {
+            throw new IllegalStateException("no can do");
+        }
         userAuthenticationPublisher.publishEvent(mapToEvent(savedUserAuthDetails, registrationTokenEntity.getRegToken()));
         return mapToModel(savedUserAuthDetails);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public UserAuth insertUserWithRetry(final UserAuthDto userAuthDto) {
+//        RetryPolicy<Object> retryPolicy = new RetryPolicy<>()
+//                .handle(IllegalStateException.class)
+//                .onRetry(r -> TransactionAspectSupport.currentTransactionStatus().setRollbackOnly())
+//                .onRetry(r -> log.info("retrying: {}", r.getLastResult().toString()))
+//                .onFailure(r -> TransactionAspectSupport.currentTransactionStatus().setRollbackOnly())
+//                .withDelay(Duration.ofMillis(50))
+//                .withMaxRetries(3);
+//
+//        return Failsafe
+//                .with(retryPolicy)
+//                .get(() -> insertUser(userAuthDto));
+        int retries = 3;
+
+        return retry(userAuthDto, retries);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public UserAuth retry(final UserAuthDto userAuthDto, final int retries) {
+        try {
+            return insertUser(userAuthDto);
+        } catch (IllegalStateException ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            if (retries > 0) {
+                return retry(userAuthDto, retries - 1);
+            } else {
+                throw ex;
+            }
+        }
     }
 
     public UserAuth retrieveUserFromEmail(final String email) {

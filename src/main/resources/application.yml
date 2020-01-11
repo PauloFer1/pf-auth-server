@@ -19,8 +19,8 @@ management:
           batchSize: 20
 
 kafka.sasl.config:
-  username: ENC(+lOGJfXKpxLrXWDreoAj5AgJaX5uoVynJTmcPcBe/F4=)
-  password: ENC(fB3bFPyS4qLUWE7YERmhKG3L8CFRn8tW2XJ2ol+KOErv94hstelwA2pLS+y/xDl39DLfWXhlw0DNbYqZzS7dMSsWC+/J5mDxB6s3gEsG0Wk=)
+  username: ENC(zNb+yQNnaaw7jCRj2VAqHmv8nuWkO5HcE/b0pSH4FzM=)
+  password: ENC(QfPYyMySLK3QcA0Qtf6AvUryshVX2240qYDrjoy1FBPKfkTZLAJOSKHxZPyysZW566l0iQzP6IbuwiYgCXdy5VKp9fxcz7/KjSq3IaoVNoA=)
 
 spring:
   data:
@@ -36,7 +36,7 @@ spring:
     properties:
       topic.metadata.refresh.interval.ms: 10
       specific.avro.reader: true
-      request.timeout.ms: 60000
+      request.timeout.ms: 10000
       linger.ms: 0
       security:
         protocol: SASL_SSL
@@ -47,9 +47,12 @@ spring:
     ssl:
       endpoint.identification.algorithm: https
     producer:
+      transaction-id-prefix: tx-prefix
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:
+        enable:
+          idempotence: true
         basic:
           auth:
             credentials:
@@ -59,11 +62,14 @@ spring:
           registry:
             url: https://psrc-e8157.us-east-2.aws.confluent.cloud
 #            basic.auth.user.info: ENC(7SrjYIBoiJVPHlKnUFClZBs5KYphKfuJDkjdQxc5U+oodtd3y2ezar4eyesZqhi7iDM17EKoZV9eQXA6JL1ojIrlJXvuwAWTtHeTAV5rdxSx3A9+7cYou7iTG/WoDat7)
-      retries: 3
-      acks: 1
+      retries: 10
+      acks: all
       batch-size: 0
       ack-timeout-secs: 60
       buffer-memory: 512
+      delivery:
+        timeout:
+          ms: 10000
 
 kafka:
   topicName: pf-auth-dev
