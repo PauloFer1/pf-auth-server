@@ -15,6 +15,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,5 +68,28 @@ public class TokenFactoryTest {
 
         // Then
         assertThat(refreshToken.length()).isEqualTo(32);
+    }
+
+    @Test
+    public void createRegistrationToken() {
+        // Given
+        final String value = "value";
+
+        // When
+        final String token = tokenFactory.createRegistrationToken(value);
+
+        // Then
+        assertThat(token).contains(value);
+        assertThat(token.length()).isGreaterThan(value.length());
+    }
+
+    @Test
+    public void generateUuid() {
+        // Given
+        // When
+        final UUID generated = tokenFactory.generateUuid();
+
+        // Then
+        assertThat(generated).isNotNull();
     }
 }

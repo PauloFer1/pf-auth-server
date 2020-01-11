@@ -104,6 +104,7 @@ public class RefreshTokenApiControllerIT {
     public void setUp() throws Exception {
         mongoTemplate.createCollection("user");
         mongoTemplate.createCollection("refresh-token");
+        mongoTemplate.createCollection("reg_token");
         schemaRegistryClient.register(TOPIC_NAME + "-value", UserAuthentication.SCHEMA$);
         authenticationService.insertUser(ADMIN_USER);
     }
@@ -113,6 +114,9 @@ public class RefreshTokenApiControllerIT {
         final Query query = new Query();
         query.addCriteria(Criteria.where("email").is(ADMIN_USER.getEmail()));
         mongoTemplate.remove(query, DatabaseConfiguration.MONGO_COLLECTIONS.AUTHENTICATION_COLLECTION.collection());
+        mongoTemplate.dropCollection("user");
+        mongoTemplate.dropCollection("refresh-token");
+        mongoTemplate.dropCollection("reg_token");
     }
 
     @Test

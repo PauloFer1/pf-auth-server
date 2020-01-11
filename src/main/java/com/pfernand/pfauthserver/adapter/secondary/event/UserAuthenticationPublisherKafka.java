@@ -38,11 +38,13 @@ public class UserAuthenticationPublisherKafka implements UserAuthenticationPubli
     @Override
     public void publishEvent(UserAuthEvent event) {
         final UserAuthentication userAuthentication = UserAuthentication.newBuilder()
+                .setUserUuid(event.getUserUuid())
                 .setEmail(event.getEmail())
                 .setRole(event.getRole())
                 .setIndex(indexCounter.getAndIncrement())
                 .setUniqueId(UUID.randomUUID().toString())
                 .setTime(event.getCreatedAt().toEpochMilli())
+                .setAuthToken(event.getAuthToken())
                 .build();
         log.info(String.format("Sending event: %s", userAuthentication.getUniqueId()));
         sendEventToKafka(userAuthentication);
@@ -51,6 +53,7 @@ public class UserAuthenticationPublisherKafka implements UserAuthenticationPubli
     private void sendEventToKafka(final UserAuthentication userAuthentication) {
         ListenableFuture<SendResult<String, UserAuthentication>> futureSendResult = kafkaTemplate.send(topicName, UUID.randomUUID().toString(), userAuthentication);
         try {
+            // Todo - Add callback
             futureSendResult.get(ackTimeoutInSeconds, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException ex) {
             Thread.currentThread().interrupt();

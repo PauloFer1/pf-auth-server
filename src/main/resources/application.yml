@@ -45,7 +45,7 @@ spring:
           config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${kafka.sasl.config.username}" password="${kafka.sasl.config.password}";
     specific.avro.reader: true
     ssl:
-      endpoint.identification.algorithm: http
+      endpoint.identification.algorithm: https
     producer:
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -54,6 +54,7 @@ spring:
           auth:
             credentials:
               source: USER_INFO
+            user.info: ENC(7SrjYIBoiJVPHlKnUFClZBs5KYphKfuJDkjdQxc5U+oodtd3y2ezar4eyesZqhi7iDM17EKoZV9eQXA6JL1ojIrlJXvuwAWTtHeTAV5rdxSx3A9+7cYou7iTG/WoDat7)
         schema:
           registry:
             url: https://psrc-e8157.us-east-2.aws.confluent.cloud
@@ -63,6 +64,9 @@ spring:
       batch-size: 0
       ack-timeout-secs: 60
       buffer-memory: 512
+      delivery:
+        timeout:
+          ms: 10000
 
 kafka:
   topicName: pf-auth-dev

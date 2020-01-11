@@ -23,7 +23,8 @@ public class DatabaseConfiguration
 
     public enum MONGO_COLLECTIONS {
         AUTHENTICATION_COLLECTION("user"),
-        REFRESH_TOKEN_COLLECTION("refresh_token");
+        REFRESH_TOKEN_COLLECTION("refresh_token"),
+        REG_TOKEN_COLLECTION("reg_token");
 
         private String collection;
 

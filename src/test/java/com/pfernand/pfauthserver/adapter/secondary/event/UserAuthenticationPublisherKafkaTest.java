@@ -15,6 +15,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import java.time.Instant;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -49,10 +50,12 @@ public class UserAuthenticationPublisherKafkaTest {
     public void publishEventSendMessage() throws Exception {
         // Given
         final UserAuthEvent userAuthEvent = UserAuthEvent.builder()
+                .userUuid(UUID.randomUUID().toString())
                 .email(EMAIL)
                 .role(ROLE)
                 .subject(UserAuthSubject.CUSTOMER)
                 .createdAt(NOW)
+                .authToken(UUID.randomUUID().toString())
                 .build();
 
         // When
@@ -71,10 +74,12 @@ public class UserAuthenticationPublisherKafkaTest {
     public void publishEventThrowsException() throws Exception {
         // Given
         final UserAuthEvent userAuthEvent = UserAuthEvent.builder()
+                .userUuid(UUID.randomUUID().toString())
                 .email(EMAIL)
                 .role(ROLE)
                 .subject(UserAuthSubject.CUSTOMER)
                 .createdAt(NOW)
+                .authToken(UUID.randomUUID().toString())
                 .build();
 
         Mockito.when(kafkaTemplate.send(Mockito.eq(TOPIC_NAME), Mockito.anyString(), Mockito.any(UserAuthentication.class)))

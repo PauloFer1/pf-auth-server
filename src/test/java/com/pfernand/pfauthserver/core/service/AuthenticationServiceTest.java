@@ -6,11 +6,14 @@ import com.pfernand.pfauthserver.core.exceptions.UserDetailsNotFoundException;
 import com.pfernand.pfauthserver.core.model.UserAuth;
 import com.pfernand.pfauthserver.core.model.UserAuthDto;
 import com.pfernand.pfauthserver.core.model.UserAuthSubject;
+import com.pfernand.pfauthserver.core.security.TokenFactory;
 import com.pfernand.pfauthserver.core.validation.UserAuthValidation;
 import com.pfernand.pfauthserver.port.secondary.event.UserAuthenticationPublisher;
 import com.pfernand.pfauthserver.port.secondary.event.dto.UserAuthEvent;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationCommand;
 import com.pfernand.pfauthserver.port.secondary.persistence.AuthenticationQuery;
+import com.pfernand.pfauthserver.port.secondary.persistence.RegistrationTokenCommand;
+import com.pfernand.pfauthserver.port.secondary.persistence.entity.RegistrationTokenEntity;
 import com.pfernand.pfauthserver.port.secondary.persistence.entity.UserAuthEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,9 +25,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.in;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -48,12 +53,20 @@ public class AuthenticationServiceTest {
             .role(ROLE)
             .subject(UserAuthSubject.CUSTOMER)
             .createdAt(NOW)
+            .userUuid(UUID.randomUUID())
+            .build();
+    private static final RegistrationTokenEntity REGISTRATION_TOKEN_ENTITY = RegistrationTokenEntity.builder()
+            .userUuid(USER_AUTH_ENTITY.getUserUuid())
+            .expirationDate(NOW.plus(24, ChronoUnit.HOURS))
+            .regToken(UUID.randomUUID().toString())
             .build();
     private static final UserAuthEvent USER_AUTH_EVENT = UserAuthEvent.builder()
+            .userUuid(USER_AUTH_ENTITY.getUserUuid().toString())
             .email(EMAIL)
             .role(ROLE)
             .subject(UserAuthSubject.CUSTOMER)
             .createdAt(USER_AUTH_ENTITY.getCreatedAt())
+            .authToken(REGISTRATION_TOKEN_ENTITY.getRegToken())
             .build();
 
     @Mock
@@ -74,6 +87,12 @@ public class AuthenticationServiceTest {
     @Mock
     private Clock clock;
 
+    @Mock
+    private TokenFactory tokenFactory;
+
+    @Mock
+    private RegistrationTokenCommand registrationTokenCommand;
+
     @InjectMocks
     private AuthenticationService authenticationService;
 
@@ -86,6 +105,7 @@ public class AuthenticationServiceTest {
                 .email(USER_AUTH_ENTITY.getEmail())
                 .subject(UserAuthSubject.CUSTOMER)
                 .createdAt(NOW)
+                .userUuid(USER_AUTH_ENTITY.getUserUuid())
                 .build();
 
         // When
@@ -93,12 +113,19 @@ public class AuthenticationServiceTest {
                 .thenReturn(NOW);
         Mockito.when(bCryptPasswordEncoder.encode(PASSWORD))
                 .thenReturn(ENCODED_PASSWORD);
+        Mockito.when(tokenFactory.generateUuid())
+                .thenReturn(USER_AUTH_ENTITY.getUserUuid());
+        Mockito.when(tokenFactory.createRefreshToken())
+                .thenReturn(REGISTRATION_TOKEN_ENTITY.getRegToken());
         Mockito.when(authenticationCommand.insertUser(USER_AUTH_ENTITY))
                 .thenReturn(USER_AUTH_ENTITY);
+        RegistrationTokenEntity registrationTokenEntity = REGISTRATION_TOKEN_ENTITY;
+        Mockito.when(registrationTokenCommand.insert(REGISTRATION_TOKEN_ENTITY))
+                .thenReturn(REGISTRATION_TOKEN_ENTITY);
         UserAuth userAuth = authenticationService.insertUser(USER_AUTH_DTO);
 
         // Then
-        assertEquals(expectedUserAuth, userAuth);
+        assertThat(expectedUserAuth).isEqualTo(userAuth);
         Mockito.verify(userAuthenticationPublisher).publishEvent(USER_AUTH_EVENT);
         Mockito.verify(userAuthValidation).validate(USER_AUTH_DTO);
     }
@@ -152,6 +179,7 @@ public class AuthenticationServiceTest {
     public void retrieveUserFromEmailWhenValidEmailThenReturnUser() {
         // Given
         final UserAuth expectedUserAuth = UserAuth.builder()
+                .userUuid(USER_AUTH_ENTITY.getUserUuid())
                 .role(USER_AUTH_ENTITY.getRole())
                 .password(USER_AUTH_ENTITY.getPassword())
                 .email(USER_AUTH_ENTITY.getEmail())

@@ -63,4 +63,12 @@ public class TokenFactory {
         claims.put(AUTHORITIES_HEADER, roles);
         return claims;
     }
+
+    public String createRegistrationToken(final String value) {
+        return String.format("%s/%s", value, createRefreshToken());
+    }
+
+    public UUID generateUuid() {
+        return UUID.randomUUID();
+    }
 }
