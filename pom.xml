@@ -27,7 +27,7 @@
 		<findbugs-annotation.version>2.0.1</findbugs-annotation.version>
 		<unirest.version>1.4.9</unirest.version>
 		<fongo.version>2.1.1</fongo.version>
-		<avro.version>1.9.0</avro.version>
+		<avro.version>1.11.3</avro.version>
 		<avro.serializer.version>5.0.0</avro.serializer.version>
 		<wiremock.version>2.23.2</wiremock.version>
 		<spring-boot.version>2.1.1.RELEASE</spring-boot.version>
