@@ -36,7 +36,7 @@
 		<testcontainers.version>1.12.0</testcontainers.version>
 		<jackson-mapper-asl.version>1.9.13</jackson-mapper-asl.version>
 		<commons.validator.version>1.6</commons.validator.version>
-		<esapi.version>2.2.0.0</esapi.version>
+		<esapi.version>2.5.2.0</esapi.version>
 
 		<jacoco-plugin.version>0.8.2</jacoco-plugin.version>
 		<findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
